@@ -5,109 +5,236 @@ import AuthNav from '../components/AuthNav.astro';
 
 <Layout title="Panel admin · MoesConverter">
   <AuthNav />
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-16">
-    <header class="mb-8 sm:mb-10">
-      <h1 class="text-2xl sm:text-4xl font-bold text-white">Panel de administración</h1>
-      <p class="text-slate-400 text-sm sm:text-base">Actividad de MoesConverter en tiempo real.</p>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-16">
+    <!-- Page header -->
+    <header class="mb-8 sm:mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full
+                       text-[10px] font-semibold uppercase tracking-wider
+                       text-accent-300 bg-accent-500/15 border border-accent-400/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse"></span>
+            Live data
+          </span>
+          <span class="text-slate-500 text-xs">·  Neon Postgres</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          Panel de administración
+        </h1>
+        <p class="text-slate-400 text-sm sm:text-base mt-1">
+          Métricas, usuarios, IPs y actividad en tiempo real.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-refresh"
+                class="inline-flex items-center gap-2 px-3 py-2 rounded-lg
+                       text-xs sm:text-sm font-medium
+                       text-slate-300 hover:text-white
+                       bg-white/5 hover:bg-white/10
+                       border border-white/10
+                       transition-colors"
+                type="button">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          Actualizar
+        </button>
+      </div>
     </header>
 
     <!-- KPIs -->
-    <section id="kpis" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">Usuarios</p>
-        <p id="kpi-users" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <!-- Users -->
+      <div class="relative overflow-hidden rounded-2xl p-4 sm:p-5
+                  bg-gradient-to-br from-brand-500/10 via-brand-500/5 to-transparent
+                  border border-brand-400/20
+                  shadow-[0_20px_60px_-30px_rgba(60,98,255,0.4)]">
+        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-brand-500/20 blur-2xl"></div>
+        <div class="relative flex items-center gap-2 mb-3">
+          <span class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Usuarios</p>
+        </div>
+        <p id="kpi-users" class="text-3xl sm:text-4xl font-extrabold text-white tabular-nums">—</p>
+        <p class="text-xs text-slate-500 mt-1">Registrados</p>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">Conversiones</p>
-        <p id="kpi-conversions" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+
+      <!-- Conversions -->
+      <div class="relative overflow-hidden rounded-2xl p-4 sm:p-5
+                  bg-gradient-to-br from-accent-500/10 via-accent-500/5 to-transparent
+                  border border-accent-400/20
+                  shadow-[0_20px_60px_-30px_rgba(139,92,246,0.4)]">
+        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-accent-500/20 blur-2xl"></div>
+        <div class="relative flex items-center gap-2 mb-3">
+          <span class="w-8 h-8 rounded-lg bg-accent-500/20 text-accent-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+          </span>
+          <p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Conversiones</p>
+        </div>
+        <p id="kpi-conversions" class="text-3xl sm:text-4xl font-extrabold text-white tabular-nums">—</p>
+        <p class="text-xs text-slate-500 mt-1">MP4 → MP3</p>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">Descargas</p>
-        <p id="kpi-downloads" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+
+      <!-- Downloads -->
+      <div class="relative overflow-hidden rounded-2xl p-4 sm:p-5
+                  bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent
+                  border border-sky-400/20
+                  shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)]">
+        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-sky-500/20 blur-2xl"></div>
+        <div class="relative flex items-center gap-2 mb-3">
+          <span class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </span>
+          <p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Descargas</p>
+        </div>
+        <p id="kpi-downloads" class="text-3xl sm:text-4xl font-extrabold text-white tabular-nums">—</p>
+        <p class="text-xs text-slate-500 mt-1">Total MP3</p>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">Transcripciones</p>
-        <p id="kpi-transcriptions" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+
+      <!-- Transcriptions -->
+      <div class="relative overflow-hidden rounded-2xl p-4 sm:p-5
+                  bg-gradient-to-br from-fuchsia-500/10 via-fuchsia-500/5 to-transparent
+                  border border-fuchsia-400/20
+                  shadow-[0_20px_60px_-30px_rgba(217,70,239,0.4)]">
+        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-fuchsia-500/20 blur-2xl"></div>
+        <div class="relative flex items-center gap-2 mb-3">
+          <span class="w-8 h-8 rounded-lg bg-fuchsia-500/20 text-fuchsia-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          </span>
+          <p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Transcripciones</p>
+        </div>
+        <p id="kpi-transcriptions" class="text-3xl sm:text-4xl font-extrabold text-white tabular-nums">—</p>
+        <p class="text-xs text-slate-500 mt-1">Whisper local</p>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">IPs únicas (24h)</p>
-        <p id="kpi-ips24" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+    </section>
+
+    <!-- Visits row -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+      <div class="glass rounded-2xl p-4 flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-300 grid place-items-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </span>
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">IPs únicas · 24h</p>
+          <p id="kpi-ips24" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+        </div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">IPs únicas (7d)</p>
-        <p id="kpi-ips7" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      <div class="glass rounded-2xl p-4 flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-300 grid place-items-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </span>
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">IPs únicas · 7d</p>
+          <p id="kpi-ips7" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+        </div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">Visitas (24h)</p>
-        <p id="kpi-visits24" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      <div class="glass rounded-2xl p-4 flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-violet-500/15 text-violet-300 grid place-items-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">Visitas · 24h</p>
+          <p id="kpi-visits24" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+        </div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <p class="text-xs uppercase tracking-wider text-slate-400">Visitas (7d)</p>
-        <p id="kpi-visits7" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      <div class="glass rounded-2xl p-4 flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-violet-500/15 text-violet-300 grid place-items-center shrink-0">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">Visitas · 7d</p>
+          <p id="kpi-visits7" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+        </div>
       </div>
     </section>
 
     <!-- Charts -->
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
       <div class="glass rounded-2xl p-4 sm:p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-white font-semibold">Visitas (14 días)</h3>
-          <span class="text-xs text-slate-500">Total + IPs únicas</span>
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <h3 class="text-white font-semibold">Tráfico</h3>
+            <p class="text-slate-500 text-xs mt-0.5">Visitas totales vs IPs únicas · últimos 14 días</p>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-violet-500/15 text-violet-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </span>
         </div>
-        <canvas id="chart-visits" height="220"></canvas>
+        <div class="h-[220px]"><canvas id="chart-visits"></canvas></div>
       </div>
+
       <div class="glass rounded-2xl p-4 sm:p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-white font-semibold">Conversiones vs descargas (14 días)</h3>
-          <span class="text-xs text-slate-500">MP4 → MP3</span>
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <h3 class="text-white font-semibold">Conversiones vs descargas</h3>
+            <p class="text-slate-500 text-xs mt-0.5">MP4 → MP3 · últimos 14 días</p>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-brand-500/15 text-brand-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+          </span>
         </div>
-        <canvas id="chart-ops" height="220"></canvas>
+        <div class="h-[220px]"><canvas id="chart-ops"></canvas></div>
       </div>
+
       <div class="glass rounded-2xl p-4 sm:p-6 lg:col-span-2">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-white font-semibold">Transcripciones (14 días)</h3>
-          <span class="text-xs text-slate-500">Whisper local</span>
+        <div class="flex items-start justify-between mb-5">
+          <div>
+            <h3 class="text-white font-semibold">Transcripciones</h3>
+            <p class="text-slate-500 text-xs mt-0.5">Whisper local · últimos 14 días</p>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-fuchsia-500/15 text-fuchsia-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          </span>
         </div>
-        <canvas id="chart-trans" height="180"></canvas>
+        <div class="h-[200px]"><canvas id="chart-trans"></canvas></div>
       </div>
     </section>
 
-    <!-- Top IPs -->
-    <section class="glass rounded-2xl p-4 sm:p-6 mb-8">
-      <h3 class="text-white font-semibold mb-4">Top IPs (últimos 7 días)</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="text-left text-xs uppercase text-slate-500">
-            <tr class="border-b border-white/10">
-              <th class="py-2 pr-4">IP</th>
-              <th class="py-2 pr-4">Hits</th>
-              <th class="py-2 pr-4">Última visita</th>
-            </tr>
-          </thead>
-          <tbody id="table-ips" class="text-slate-200"></tbody>
-        </table>
+    <!-- Top IPs + Users side by side on wide -->
+    <section class="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6">
+      <!-- Top IPs -->
+      <div class="glass rounded-2xl p-4 sm:p-6 lg:col-span-2">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="text-white font-semibold">Top IPs</h3>
+            <p class="text-slate-500 text-xs mt-0.5">Más activas · últimos 7 días</p>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-indigo-500/15 text-indigo-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </span>
+        </div>
+        <div id="ips-list" class="space-y-2 max-h-[360px] overflow-y-auto pr-1"></div>
       </div>
-    </section>
 
-    <!-- Users -->
-    <section class="glass rounded-2xl p-4 sm:p-6">
-      <h3 class="text-white font-semibold mb-4">Usuarios registrados</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="text-left text-xs uppercase text-slate-500">
-            <tr class="border-b border-white/10">
-              <th class="py-2 pr-4">#</th>
-              <th class="py-2 pr-4">Username</th>
-              <th class="py-2 pr-4">Email</th>
-              <th class="py-2 pr-4">Rol</th>
-              <th class="py-2 pr-4">Conv.</th>
-              <th class="py-2 pr-4">Desc.</th>
-              <th class="py-2 pr-4">Trans.</th>
-              <th class="py-2 pr-4">Alta</th>
-            </tr>
-          </thead>
-          <tbody id="table-users" class="text-slate-200"></tbody>
-        </table>
+      <!-- Users -->
+      <div class="glass rounded-2xl p-4 sm:p-6 lg:col-span-3">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="text-white font-semibold">Usuarios</h3>
+            <p class="text-slate-500 text-xs mt-0.5">Actividad por cuenta</p>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-brand-500/15 text-brand-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+        </div>
+        <div class="overflow-x-auto -mx-2">
+          <table class="w-full text-sm">
+            <thead class="text-left text-[11px] uppercase tracking-wider text-slate-500">
+              <tr class="border-b border-white/10">
+                <th class="py-2 px-2 font-medium">Usuario</th>
+                <th class="py-2 px-2 font-medium">Rol</th>
+                <th class="py-2 px-2 font-medium text-right">Conv.</th>
+                <th class="py-2 px-2 font-medium text-right">Desc.</th>
+                <th class="py-2 px-2 font-medium text-right">Trans.</th>
+                <th class="py-2 px-2 font-medium">Alta</th>
+              </tr>
+            </thead>
+            <tbody id="table-users" class="text-slate-200"></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
@@ -142,43 +269,59 @@ import AuthNav from '../components/AuthNav.astro';
     BarElement,
   );
 
-  // Defaults for dark theme
-  Chart.defaults.color = 'rgba(203,213,225,0.75)';
-  Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+  Chart.defaults.color = 'rgba(203,213,225,0.8)';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
   Chart.defaults.font.family =
     'Inter, system-ui, -apple-system, Segoe UI, sans-serif';
-
-  const user = requireAdmin();
-  if (user) init();
+  Chart.defaults.font.size = 11;
 
   type SeriesPoint = { day: string; count: number };
+
+  const charts: Chart[] = [];
+
+  const user = requireAdmin();
+  if (user) {
+    load();
+    document
+      .getElementById('btn-refresh')
+      ?.addEventListener('click', () => load());
+  }
 
   function fmt(n: number): string {
     return new Intl.NumberFormat('es-ES').format(n);
   }
 
-  async function init() {
-    const [overview, topIps, users] = await Promise.all([
-      fetchJson('/admin/overview'),
-      fetchJson('/admin/visits/top-ips?days=7'),
-      fetchJson('/admin/users'),
-    ]);
+  async function load() {
+    const btn = document.getElementById('btn-refresh') as HTMLButtonElement | null;
+    if (btn) btn.disabled = true;
+    try {
+      const [overview, topIps, users] = await Promise.all([
+        fetchJson('/admin/overview'),
+        fetchJson('/admin/visits/top-ips?days=7'),
+        fetchJson('/admin/users'),
+      ]);
+      renderKpis(overview);
+      renderTopIps(topIps.ips ?? []);
+      renderUsers(users.users ?? []);
 
-    renderKpis(overview);
-    renderTopIps(topIps.ips ?? []);
-    renderUsers(users.users ?? []);
+      const [visits, uniqueIps, conv, dls, trans] = await Promise.all([
+        fetchSeries('visits'),
+        fetchSeries('unique_ips'),
+        fetchSeries('conversions'),
+        fetchSeries('downloads'),
+        fetchSeries('transcriptions'),
+      ]);
 
-    const [visits, uniqueIps, conv, dls, trans] = await Promise.all([
-      fetchSeries('visits'),
-      fetchSeries('unique_ips'),
-      fetchSeries('conversions'),
-      fetchSeries('downloads'),
-      fetchSeries('transcriptions'),
-    ]);
-
-    drawVisits(visits, uniqueIps);
-    drawOps(conv, dls);
-    drawTrans(trans);
+      charts.forEach((c) => c.destroy());
+      charts.length = 0;
+      drawVisits(visits, uniqueIps);
+      drawOps(conv, dls);
+      drawTrans(trans);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
   }
 
   async function fetchJson(path: string) {
@@ -218,15 +361,15 @@ import AuthNav from '../components/AuthNav.astro';
     const m = new Map(series.map((p) => [p.day, p.count]));
     return labels.map((l) => m.get(l) ?? 0);
   }
+  function shortDate(d: string): string {
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}`;
+  }
 
-  function linearGradient(
-    ctx: CanvasRenderingContext2D,
-    c1: string,
-    c2: string,
-  ) {
+  function gradient(ctx: CanvasRenderingContext2D, from: string, to: string) {
     const g = ctx.createLinearGradient(0, 0, 0, 220);
-    g.addColorStop(0, c1);
-    g.addColorStop(1, c2);
+    g.addColorStop(0, from);
+    g.addColorStop(1, to);
     return g;
   }
 
@@ -235,23 +378,23 @@ import AuthNav from '../components/AuthNav.astro';
     if (!el) return;
     const ctx = el.getContext('2d')!;
     const labels = mergeLabels(visits, ips);
-    new Chart(ctx, {
+    const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels,
+        labels: labels.map(shortDate),
         datasets: [
           {
             label: 'Visitas',
             data: align(labels, visits),
-            borderColor: '#8b5cf6',
-            backgroundColor: linearGradient(
-              ctx,
-              'rgba(139,92,246,0.35)',
-              'rgba(139,92,246,0)',
-            ),
+            borderColor: '#a78bfa',
+            backgroundColor: gradient(ctx, 'rgba(167,139,250,0.35)', 'rgba(167,139,250,0)'),
             borderWidth: 2,
-            pointRadius: 2,
-            tension: 0.35,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: '#a78bfa',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            tension: 0.4,
             fill: true,
           },
           {
@@ -262,12 +405,14 @@ import AuthNav from '../components/AuthNav.astro';
             borderWidth: 2,
             borderDash: [4, 4],
             pointRadius: 2,
-            tension: 0.35,
+            pointHoverRadius: 5,
+            tension: 0.4,
           },
         ],
       },
       options: chartOpts(),
     });
+    charts.push(chart);
   }
 
   function drawOps(conv: SeriesPoint[], dls: SeriesPoint[]) {
@@ -275,35 +420,38 @@ import AuthNav from '../components/AuthNav.astro';
     if (!el) return;
     const ctx = el.getContext('2d')!;
     const labels = mergeLabels(conv, dls);
-    new Chart(ctx, {
+    const chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels,
+        labels: labels.map(shortDate),
         datasets: [
           {
             label: 'Conversiones',
             data: align(labels, conv),
             backgroundColor: 'rgba(96,135,255,0.75)',
             borderRadius: 6,
+            borderSkipped: false,
           },
           {
             label: 'Descargas',
             data: align(labels, dls),
-            backgroundColor: 'rgba(124,58,237,0.75)',
+            backgroundColor: 'rgba(56,189,248,0.75)',
             borderRadius: 6,
+            borderSkipped: false,
           },
         ],
       },
       options: chartOpts(),
     });
+    charts.push(chart);
   }
 
   function drawTrans(trans: SeriesPoint[]) {
     const el = document.getElementById('chart-trans') as HTMLCanvasElement;
     if (!el) return;
     const ctx = el.getContext('2d')!;
-    const labels = trans.map((p) => p.day);
-    new Chart(ctx, {
+    const labels = trans.map((p) => shortDate(p.day));
+    const chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels,
@@ -311,21 +459,22 @@ import AuthNav from '../components/AuthNav.astro';
           {
             label: 'Transcripciones',
             data: trans.map((p) => p.count),
-            borderColor: '#10b981',
-            backgroundColor: linearGradient(
-              ctx,
-              'rgba(16,185,129,0.3)',
-              'rgba(16,185,129,0)',
-            ),
+            borderColor: '#e879f9',
+            backgroundColor: gradient(ctx, 'rgba(232,121,249,0.35)', 'rgba(232,121,249,0)'),
             borderWidth: 2,
             pointRadius: 3,
-            tension: 0.35,
+            pointHoverRadius: 5,
+            pointBackgroundColor: '#e879f9',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            tension: 0.4,
             fill: true,
           },
         ],
       },
       options: chartOpts(),
     });
+    charts.push(chart);
   }
 
   function chartOpts() {
@@ -335,48 +484,88 @@ import AuthNav from '../components/AuthNav.astro';
       interaction: { mode: 'index' as const, intersect: false },
       plugins: {
         legend: {
-          labels: { color: 'rgba(203,213,225,0.85)', font: { size: 12 } },
+          position: 'top' as const,
+          align: 'end' as const,
+          labels: {
+            color: 'rgba(203,213,225,0.85)',
+            boxWidth: 10,
+            boxHeight: 10,
+            padding: 14,
+            usePointStyle: true,
+            pointStyle: 'circle' as const,
+          },
         },
         tooltip: {
-          backgroundColor: 'rgba(15,23,42,0.95)',
-          borderColor: 'rgba(255,255,255,0.1)',
+          backgroundColor: 'rgba(15,17,26,0.97)',
+          borderColor: 'rgba(139,92,246,0.3)',
           borderWidth: 1,
           padding: 10,
           titleColor: '#fff',
           bodyColor: '#e2e8f0',
+          cornerRadius: 8,
         },
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: { color: 'rgba(148,163,184,0.8)', maxRotation: 0, autoSkip: true },
+          grid: { display: false, color: 'rgba(255,255,255,0.04)' },
+          ticks: {
+            color: 'rgba(148,163,184,0.7)',
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 10,
+          },
         },
         y: {
-          grid: { color: 'rgba(255,255,255,0.06)' },
-          ticks: { color: 'rgba(148,163,184,0.8)', precision: 0 },
+          grid: { color: 'rgba(255,255,255,0.05)', drawTicks: false },
+          ticks: { color: 'rgba(148,163,184,0.7)', precision: 0, padding: 8 },
           beginAtZero: true,
+          border: { display: false },
         },
       },
     } as const;
   }
 
-  function renderTopIps(rows: Array<{ ip: string; hits: number; last_seen: string }>) {
-    const tbody = document.getElementById('table-ips');
-    if (!tbody) return;
+  function renderTopIps(
+    rows: Array<{ ip: string; hits: number; last_seen: string }>,
+  ) {
+    const box = document.getElementById('ips-list');
+    if (!box) return;
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td class="py-3 text-slate-500" colspan="3">Sin datos todavía.</td></tr>';
+      box.innerHTML =
+        '<p class="text-slate-500 text-sm text-center py-8">Sin visitas registradas aún.</p>';
       return;
     }
-    tbody.innerHTML = rows
-      .map(
-        (r) => `
-        <tr class="border-b border-white/5">
-          <td class="py-2 pr-4 font-mono text-xs sm:text-sm">${escape(r.ip)}</td>
-          <td class="py-2 pr-4 tabular-nums">${fmt(r.hits)}</td>
-          <td class="py-2 pr-4 text-slate-400 text-xs">${new Date(r.last_seen).toLocaleString('es-ES')}</td>
-        </tr>`,
-      )
+    const max = Math.max(...rows.map((r) => r.hits));
+    box.innerHTML = rows
+      .map((r) => {
+        const pct = max > 0 ? (r.hits / max) * 100 : 0;
+        const last = new Date(r.last_seen);
+        const rel = relTime(last);
+        return `
+        <div class="relative rounded-lg px-3 py-2 border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+          <div class="absolute inset-y-0 left-0 rounded-lg bg-gradient-to-r from-accent-500/20 via-accent-500/5 to-transparent" style="width:${pct.toFixed(1)}%"></div>
+          <div class="relative flex items-center justify-between gap-3">
+            <span class="font-mono text-xs text-slate-200 truncate">${escape(r.ip)}</span>
+            <div class="flex items-center gap-3 text-xs shrink-0">
+              <span class="text-slate-500">${rel}</span>
+              <span class="font-semibold text-white tabular-nums">${fmt(r.hits)}</span>
+            </div>
+          </div>
+        </div>`;
+      })
       .join('');
+  }
+
+  function relTime(d: Date): string {
+    const diff = Date.now() - d.getTime();
+    const s = Math.floor(diff / 1000);
+    if (s < 60) return `${s}s`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h`;
+    const dd = Math.floor(h / 24);
+    return `${dd}d`;
   }
 
   function renderUsers(
@@ -394,23 +583,37 @@ import AuthNav from '../components/AuthNav.astro';
     const tbody = document.getElementById('table-users');
     if (!tbody) return;
     if (rows.length === 0) {
-      tbody.innerHTML = '<tr><td class="py-3 text-slate-500" colspan="8">Sin usuarios.</td></tr>';
+      tbody.innerHTML =
+        '<tr><td class="py-6 text-center text-slate-500" colspan="6">Sin usuarios.</td></tr>';
       return;
     }
     tbody.innerHTML = rows
-      .map(
-        (u) => `
-        <tr class="border-b border-white/5">
-          <td class="py-2 pr-4 text-slate-500">${u.id}</td>
-          <td class="py-2 pr-4 font-medium text-white">@${escape(u.username)}</td>
-          <td class="py-2 pr-4 text-slate-300 text-xs sm:text-sm">${escape(u.email)}</td>
-          <td class="py-2 pr-4"><span class="${u.role === 'admin' ? 'text-accent-400' : 'text-slate-400'} text-xs uppercase">${escape(u.role)}</span></td>
-          <td class="py-2 pr-4 tabular-nums">${fmt(u.conversions)}</td>
-          <td class="py-2 pr-4 tabular-nums">${fmt(u.downloads)}</td>
-          <td class="py-2 pr-4 tabular-nums">${fmt(u.transcriptions)}</td>
-          <td class="py-2 pr-4 text-slate-500 text-xs">${new Date(u.created_at).toLocaleDateString('es-ES')}</td>
-        </tr>`,
-      )
+      .map((u) => {
+        const initial = u.username.charAt(0).toUpperCase();
+        const roleBadge =
+          u.role === 'admin'
+            ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-accent-500/15 text-accent-300 border border-accent-400/30">Admin</span>'
+            : '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-white/5 text-slate-400 border border-white/10">User</span>';
+        return `
+        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+          <td class="py-2.5 px-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-7 h-7 rounded-full grid place-items-center shrink-0
+                           bg-gradient-to-br from-brand-400 to-accent-500
+                           text-white text-[11px] font-bold">${escape(initial)}</span>
+              <div class="min-w-0">
+                <p class="text-white font-medium text-sm truncate">@${escape(u.username)}</p>
+                <p class="text-slate-500 text-[11px] truncate">${escape(u.email)}</p>
+              </div>
+            </div>
+          </td>
+          <td class="py-2.5 px-2">${roleBadge}</td>
+          <td class="py-2.5 px-2 text-right tabular-nums text-slate-200">${fmt(u.conversions)}</td>
+          <td class="py-2.5 px-2 text-right tabular-nums text-slate-200">${fmt(u.downloads)}</td>
+          <td class="py-2.5 px-2 text-right tabular-nums text-slate-200">${fmt(u.transcriptions)}</td>
+          <td class="py-2.5 px-2 text-slate-500 text-xs">${new Date(u.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}</td>
+        </tr>`;
+      })
       .join('');
   }
 

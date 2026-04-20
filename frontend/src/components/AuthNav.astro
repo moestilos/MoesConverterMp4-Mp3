@@ -1,43 +1,131 @@
 ---
 ---
-<nav id="auth-nav" class="fixed top-0 inset-x-0 z-20 px-4 sm:px-6 py-3 flex items-center justify-between glass border-b border-white/5">
-  <a href="/" class="flex items-center gap-2 text-white font-semibold text-sm sm:text-base">
-    <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 grid place-items-center text-xs">M</span>
-    MoesConverter
-  </a>
-  <div class="flex items-center gap-2 sm:gap-3" id="auth-nav-right">
-    <span id="nav-user" class="hidden text-slate-300 text-sm"></span>
-    <a id="nav-admin" href="/admin" class="hidden btn-ghost text-xs sm:text-sm">Admin</a>
-    <button id="nav-logout" class="hidden btn-ghost text-xs sm:text-sm" type="button">Salir</button>
-    <a id="nav-login" href="/login" class="hidden btn-ghost text-xs sm:text-sm">Entrar</a>
-    <a id="nav-register" href="/register" class="hidden btn-primary text-xs sm:text-sm py-2 px-3">Registrarse</a>
+<nav id="auth-nav"
+     class="fixed top-0 inset-x-0 z-30
+            bg-[#07070b]/70 backdrop-blur-xl
+            border-b border-white/10
+            shadow-[0_1px_0_0_rgba(255,255,255,0.04),0_8px_32px_-20px_rgba(0,0,0,0.8)]">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="/" class="group flex items-center gap-2.5 shrink-0" aria-label="Inicio">
+      <span class="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl
+                   bg-gradient-to-br from-brand-500 via-accent-500 to-brand-600
+                   grid place-items-center
+                   shadow-[0_0_20px_-4px_rgba(124,58,237,0.6)]
+                   transition-transform group-hover:scale-105">
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 20V4l6 8 6-8v16" />
+        </svg>
+      </span>
+      <span class="flex flex-col leading-none">
+        <span class="text-white font-bold text-sm sm:text-base tracking-tight">MoesConverter</span>
+        <span class="hidden sm:inline text-[10px] text-slate-500 uppercase tracking-[0.2em] mt-0.5">
+          mp4 · mp3 · text
+        </span>
+      </span>
+    </a>
+
+    <!-- Right cluster -->
+    <div id="auth-nav-right" class="flex items-center gap-1.5 sm:gap-2">
+      <!-- Authenticated state -->
+      <a id="nav-admin" href="/admin"
+         class="hidden items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg
+                text-xs sm:text-sm font-medium
+                text-accent-300 hover:text-white
+                bg-accent-500/10 hover:bg-accent-500/20
+                border border-accent-400/20 hover:border-accent-400/50
+                transition-colors">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>
+        </svg>
+        <span class="hidden sm:inline">Admin</span>
+      </a>
+
+      <div id="nav-user-chip"
+           class="hidden items-center gap-2 pl-1.5 pr-2 sm:pr-3 py-1 rounded-full
+                  bg-white/5 border border-white/10">
+        <span id="nav-user-avatar"
+              class="w-6 h-6 rounded-full grid place-items-center
+                     bg-gradient-to-br from-brand-400 to-accent-500
+                     text-white text-[11px] font-bold">—</span>
+        <span id="nav-user" class="text-slate-200 text-xs sm:text-sm font-medium">—</span>
+      </div>
+
+      <button id="nav-logout" type="button"
+              class="hidden items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg
+                     text-xs sm:text-sm font-medium
+                     text-slate-300 hover:text-white
+                     hover:bg-white/5
+                     border border-transparent hover:border-white/10
+                     transition-colors"
+              aria-label="Cerrar sesión">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span class="hidden sm:inline">Salir</span>
+      </button>
+
+      <!-- Anonymous state -->
+      <a id="nav-login" href="/login"
+         class="hidden px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium
+                text-slate-300 hover:text-white hover:bg-white/5
+                border border-white/10 transition-colors">
+        Entrar
+      </a>
+      <a id="nav-register" href="/register"
+         class="hidden px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold
+                text-white
+                bg-gradient-to-r from-brand-500 to-accent-500
+                bg-[length:200%_100%]
+                shadow-[0_0_20px_-6px_rgba(124,58,237,0.7)]
+                hover:bg-[position:100%_0] hover:-translate-y-px
+                active:translate-y-0
+                transition-all">
+        Registrarse
+      </a>
+    </div>
   </div>
 </nav>
 
 <script>
   import { clearAuth, getUser, getToken, validateSession } from '../scripts/auth';
   const navUser = document.getElementById('nav-user');
+  const navUserChip = document.getElementById('nav-user-chip');
+  const navUserAvatar = document.getElementById('nav-user-avatar');
   const navAdmin = document.getElementById('nav-admin');
   const navLogout = document.getElementById('nav-logout');
   const navLogin = document.getElementById('nav-login');
   const navRegister = document.getElementById('nav-register');
 
+  function show(el: HTMLElement | null, display = 'inline-flex') {
+    if (!el) return;
+    el.classList.remove('hidden');
+    el.style.display = display;
+  }
+  function hide(el: HTMLElement | null) {
+    if (!el) return;
+    el.classList.add('hidden');
+    el.style.display = '';
+  }
+
   function render(user: { username: string; role: string } | null) {
     if (user) {
-      if (navUser) {
-        navUser.textContent = `@${user.username}`;
-        navUser.classList.remove('hidden');
-      }
-      navLogout?.classList.remove('hidden');
-      if (user.role === 'admin') navAdmin?.classList.remove('hidden');
-      navLogin?.classList.add('hidden');
-      navRegister?.classList.add('hidden');
+      if (navUser) navUser.textContent = `@${user.username}`;
+      if (navUserAvatar) navUserAvatar.textContent = user.username.charAt(0).toUpperCase();
+      show(navUserChip);
+      show(navLogout);
+      if (user.role === 'admin') show(navAdmin);
+      else hide(navAdmin);
+      hide(navLogin);
+      hide(navRegister);
     } else {
-      navUser?.classList.add('hidden');
-      navAdmin?.classList.add('hidden');
-      navLogout?.classList.add('hidden');
-      navLogin?.classList.remove('hidden');
-      navRegister?.classList.remove('hidden');
+      hide(navUserChip);
+      hide(navAdmin);
+      hide(navLogout);
+      show(navLogin);
+      show(navRegister);
     }
   }
 
