@@ -1,0 +1,24 @@
+node_modules
+dist
+.astro
+.env
+.env.*
+!.env.example
+
+# runtime artifacts
+backend/uploads/*
+backend/outputs/*
+!backend/uploads/.gitkeep
+!backend/outputs/.gitkeep
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode
+.idea
