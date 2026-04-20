@@ -68,7 +68,7 @@ router.post('/upload', (req, res, next) => {
 });
 
 router.get('/convert/:id', (req: Request, res: Response) => {
-  const job = getJob(req.params.id);
+  const job = getJob(String(req.params.id));
   if (!job) {
     return res.status(404).json({ error: 'Job no encontrado.' });
   }
@@ -132,7 +132,7 @@ router.get('/convert/:id', (req: Request, res: Response) => {
 });
 
 router.get('/download/:id', (req: Request, res: Response) => {
-  const job = getJob(req.params.id);
+  const job = getJob(String(req.params.id));
   if (!job || job.status !== 'ready' || !job.outputPath) {
     return res.status(404).json({ error: 'Archivo no disponible.' });
   }
@@ -161,7 +161,7 @@ router.get('/download/:id', (req: Request, res: Response) => {
 });
 
 router.delete('/jobs/:id', async (req, res) => {
-  const job = getJob(req.params.id);
+  const job = getJob(String(req.params.id));
   if (!job) return res.status(404).json({ error: 'Job no encontrado.' });
   await safeUnlink(job.inputPath);
   await safeUnlink(job.outputPath);
@@ -170,7 +170,7 @@ router.delete('/jobs/:id', async (req, res) => {
 });
 
 router.get('/jobs/:id', (req, res) => {
-  const job = getJob(req.params.id);
+  const job = getJob(String(req.params.id));
   if (!job) return res.status(404).json({ error: 'Job no encontrado.' });
   res.json({
     id: job.id,

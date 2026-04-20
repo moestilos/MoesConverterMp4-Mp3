@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const backendRoot = path.resolve(__dirname, '..', '..');
+// backend/ siempre es CWD (npm scripts lo garantizan).
+// Permite override con BACKEND_ROOT si se invoca desde otro lugar.
+const backendRoot = path.resolve(process.env.BACKEND_ROOT ?? process.cwd());
 
 function parseOrigins(raw: string | undefined): string[] | '*' {
   if (!raw || raw.trim() === '*') return '*';
