@@ -1,0 +1,67 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 sm:mt-20 border-t border-white/5 pt-10 pb-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 text-xs sm:text-sm">
+      <!-- Left: author -->
+      <div class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 via-accent-500 to-fuchsia-500
+                     grid place-items-center text-white font-bold text-sm shadow-glow">
+          G
+        </span>
+        <div class="leading-tight text-center sm:text-left">
+          <p class="text-slate-300">
+            Hecho por <span class="font-semibold text-white">Guillermo Mateos</span>
+          </p>
+          <p class="text-slate-500 text-[11px] sm:text-xs">
+            Proyecto personal · {year}
+          </p>
+        </div>
+      </div>
+
+      <!-- Center: stack -->
+      <p class="text-slate-500 text-center">
+        <span class="text-slate-300">Astro</span> ·
+        <span class="text-slate-300">Tailwind</span> ·
+        <span class="text-slate-300">Express</span> ·
+        <span class="text-slate-300">FFmpeg</span> ·
+        <span class="text-slate-300">Whisper</span> ·
+        <span class="text-slate-300">Neon</span>
+      </p>
+
+      <!-- Right: links -->
+      <div class="flex items-center gap-2">
+        <a href="https://github.com/moestilos"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
+                  text-slate-300 hover:text-white
+                  bg-white/5 hover:bg-white/10
+                  border border-white/10 hover:border-white/20
+                  transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.73.5.75 5.48.75 11.75c0 4.97 3.23 9.18 7.7 10.67.56.1.77-.24.77-.54 0-.27-.01-1.16-.02-2.1-3.13.68-3.79-1.34-3.79-1.34-.51-1.3-1.25-1.64-1.25-1.64-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.29-5.13-1.25-5.13-5.57 0-1.23.44-2.24 1.16-3.03-.12-.29-.5-1.44.11-3 0 0 .94-.3 3.09 1.16a10.7 10.7 0 0 1 5.63 0c2.15-1.46 3.09-1.16 3.09-1.16.61 1.56.22 2.71.11 3 .72.79 1.16 1.8 1.16 3.03 0 4.33-2.63 5.28-5.14 5.56.4.35.76 1.03.76 2.08 0 1.5-.01 2.71-.01 3.08 0 .3.2.65.77.54 4.47-1.49 7.7-5.7 7.7-10.67C23.25 5.48 18.27.5 12 .5z"/>
+          </svg>
+          <span class="text-xs sm:text-sm font-medium">moestilos</span>
+        </a>
+        <a href="https://github.com/moestilos/MoesConverterMp4-Mp3"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
+                  text-slate-400 hover:text-white
+                  hover:bg-white/5
+                  border border-transparent hover:border-white/10
+                  transition-colors"
+           title="Ver el código del proyecto">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+          <span class="hidden sm:inline text-xs sm:text-sm font-medium">Código</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

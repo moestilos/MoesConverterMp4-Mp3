@@ -1,0 +1,387 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AuthNav from '../components/AuthNav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Tu perfil · MoesConverter">
+  <AuthNav />
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-16">
+    <!-- Hero card -->
+    <section class="relative overflow-hidden rounded-3xl p-5 sm:p-8 mb-6
+                    bg-gradient-to-br from-brand-500/15 via-accent-500/10 to-fuchsia-500/10
+                    border border-white/10
+                    shadow-[0_30px_80px_-30px_rgba(139,92,246,0.45)]">
+      <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-accent-500/25 blur-3xl"></div>
+      <div class="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-brand-500/25 blur-3xl"></div>
+
+      <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
+        <!-- Avatar -->
+        <div class="relative shrink-0">
+          <div id="profile-avatar"
+               class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl
+                      bg-gradient-to-br from-brand-400 via-accent-500 to-fuchsia-500
+                      grid place-items-center
+                      text-white text-3xl sm:text-4xl font-extrabold
+                      shadow-[0_20px_50px_-15px_rgba(139,92,246,0.7)]
+                      ring-2 ring-white/10">
+            —
+          </div>
+          <span id="profile-role-badge"
+                class="hidden absolute -bottom-1.5 -right-1.5
+                       px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
+                       bg-accent-500 text-white
+                       shadow-lg ring-2 ring-[#0a0a12]">Admin</span>
+        </div>
+
+        <!-- Info -->
+        <div class="min-w-0 flex-1">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">Tu perfil</p>
+          <h1 id="profile-username" class="text-2xl sm:text-3xl font-extrabold text-white truncate">
+            @—
+          </h1>
+          <p id="profile-email" class="text-slate-300 text-sm truncate">—</p>
+          <p id="profile-joined" class="text-slate-500 text-xs mt-1">—</p>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex items-center gap-2 shrink-0">
+          <a href="/" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg
+                    text-xs sm:text-sm font-medium
+                    text-slate-300 hover:text-white
+                    bg-white/5 hover:bg-white/10
+                    border border-white/10 transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="19 12 5 12"/><polyline points="12 19 5 12 12 5"/></svg>
+            <span>Volver</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats grid -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-300 grid place-items-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+          </span>
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">Conversiones</p>
+        </div>
+        <p id="stat-conversions" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 grid place-items-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </span>
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">Descargas</p>
+        </div>
+        <p id="stat-downloads" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-7 h-7 rounded-lg bg-fuchsia-500/20 text-fuchsia-300 grid place-items-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          </span>
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">Transcripciones</p>
+        </div>
+        <p id="stat-transcriptions" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 grid place-items-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </span>
+          <p class="text-[11px] uppercase tracking-wider text-slate-400">Audio procesado</p>
+        </div>
+        <p id="stat-seconds" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+      </div>
+    </section>
+
+    <!-- Byte usage -->
+    <section class="glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <div class="flex items-start justify-between mb-4 gap-4">
+        <div>
+          <h3 class="text-white font-semibold">Compresión acumulada</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Total bytes entrada → salida en tus conversiones</p>
+        </div>
+        <span id="stat-ratio"
+              class="px-2.5 py-1 rounded-lg text-xs font-bold
+                     bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 tabular-nums">—</span>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="text-slate-400">Entrada (video)</span>
+            <span id="stat-bytes-in" class="text-slate-200 font-mono tabular-nums">—</span>
+          </div>
+          <div class="progress-track"><div id="bar-in" class="progress-bar" style="width:0%"></div></div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="text-slate-400">Salida (MP3)</span>
+            <span id="stat-bytes-out" class="text-slate-200 font-mono tabular-nums">—</span>
+          </div>
+          <div class="progress-track"><div id="bar-out" class="progress-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section class="glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-white font-semibold">Actividad reciente</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Últimas 20 acciones</p>
+        </div>
+      </div>
+      <div id="activity-list" class="space-y-2"></div>
+    </section>
+
+    <!-- Change password -->
+    <section class="glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <h3 class="text-white font-semibold mb-1">Cambiar contraseña</h3>
+      <p class="text-slate-500 text-xs mb-4">Mínimo 6 caracteres.</p>
+      <form id="pw-form" class="space-y-3 max-w-md">
+        <div>
+          <label for="current-pw" class="block text-xs text-slate-400 mb-1">Contraseña actual</label>
+          <input id="current-pw" name="currentPassword" type="password" required autocomplete="current-password"
+            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-accent-400/60 text-sm" />
+        </div>
+        <div>
+          <label for="new-pw" class="block text-xs text-slate-400 mb-1">Nueva contraseña</label>
+          <input id="new-pw" name="newPassword" type="password" required minlength="6" autocomplete="new-password"
+            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-accent-400/60 text-sm" />
+        </div>
+        <p id="pw-error" class="text-rose-300 text-sm hidden"></p>
+        <p id="pw-success" class="text-emerald-300 text-sm hidden">Contraseña actualizada.</p>
+        <button type="submit" class="btn-primary">Actualizar contraseña</button>
+      </form>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { apiFetch, requireAuth } from '../scripts/auth';
+
+  const user = requireAuth('/login?next=/profile');
+  if (user) init();
+
+  function fmt(n: number): string {
+    return new Intl.NumberFormat('es-ES').format(n);
+  }
+  function fmtBytes(b: number): string {
+    if (!b) return '0 B';
+    const k = 1024;
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.min(units.length - 1, Math.floor(Math.log(b) / Math.log(k)));
+    return `${(b / Math.pow(k, i)).toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
+  }
+  function fmtDuration(s: number): string {
+    if (!s) return '0s';
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}h ${m}m`;
+    if (m > 0) return `${m}m ${sec}s`;
+    return `${sec}s`;
+  }
+  function relTime(d: Date): string {
+    const diff = Date.now() - d.getTime();
+    const s = Math.floor(diff / 1000);
+    if (s < 60) return `hace ${s}s`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `hace ${m}m`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `hace ${h}h`;
+    const dd = Math.floor(h / 24);
+    return `hace ${dd}d`;
+  }
+  function escape(s: string): string {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function init() {
+    try {
+      const [profile, activity] = await Promise.all([
+        apiFetch('/me/profile').then((r) => r.json()),
+        apiFetch('/me/activity?limit=20').then((r) => r.json()),
+      ]);
+      renderProfile(profile);
+      renderActivity(activity.activity ?? []);
+    } catch (e) {
+      console.error(e);
+    }
+
+    document
+      .getElementById('pw-form')
+      ?.addEventListener('submit', changePassword);
+  }
+
+  function renderProfile(data: any) {
+    const u = data.user;
+    const s = data.stats;
+    const avatar = document.getElementById('profile-avatar');
+    if (avatar) avatar.textContent = u.username.charAt(0).toUpperCase();
+    setText('profile-username', `@${u.username}`);
+    setText('profile-email', u.email);
+    const joined = new Date(u.createdAt);
+    setText(
+      'profile-joined',
+      `Miembro desde ${joined.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}`,
+    );
+    if (u.role === 'admin') {
+      document.getElementById('profile-role-badge')?.classList.remove('hidden');
+    }
+    setText('stat-conversions', fmt(s.conversions));
+    setText('stat-downloads', fmt(s.downloads));
+    setText('stat-transcriptions', fmt(s.transcriptions));
+    setText('stat-seconds', fmtDuration(s.secondsAudio));
+    setText('stat-bytes-in', fmtBytes(s.bytesIn));
+    setText('stat-bytes-out', fmtBytes(s.bytesOut));
+
+    const total = s.bytesIn || 1;
+    const inPct = 100;
+    const outPct = Math.min(100, (s.bytesOut / total) * 100);
+    (document.getElementById('bar-in') as HTMLElement).style.width = `${inPct}%`;
+    (document.getElementById('bar-out') as HTMLElement).style.width = `${outPct}%`;
+
+    if (s.bytesIn > 0 && s.bytesOut > 0) {
+      const ratio = s.bytesIn / s.bytesOut;
+      setText('stat-ratio', `${ratio.toFixed(1)}x menos`);
+    } else {
+      setText('stat-ratio', '—');
+    }
+  }
+
+  function setText(id: string, v: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = v;
+  }
+
+  function renderActivity(
+    rows: Array<{
+      type: 'conversion' | 'download' | 'transcription';
+      created_at: string;
+      detail: Record<string, unknown>;
+    }>,
+  ) {
+    const box = document.getElementById('activity-list');
+    if (!box) return;
+    if (rows.length === 0) {
+      box.innerHTML =
+        '<p class="text-slate-500 text-sm text-center py-8">Todavía no hay actividad. Sube un vídeo para empezar.</p>';
+      return;
+    }
+    box.innerHTML = rows.map((r) => activityRow(r)).join('');
+  }
+
+  function activityRow(r: {
+    type: string;
+    created_at: string;
+    detail: Record<string, unknown>;
+  }): string {
+    const when = new Date(r.created_at);
+    const rel = relTime(when);
+    const abs = when.toLocaleString('es-ES');
+    if (r.type === 'conversion') {
+      const src = Number(r.detail.sourceSize ?? 0);
+      const out = Number(r.detail.outputSize ?? 0);
+      const dur = Number(r.detail.durationSec ?? 0);
+      return row(
+        'brand',
+        '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
+        'Conversión',
+        `${fmtBytes(src)} → ${fmtBytes(out)} · ${fmtDuration(dur)}`,
+        rel,
+        abs,
+      );
+    }
+    if (r.type === 'download') {
+      const name = (r.detail.filename as string) ?? 'archivo.mp3';
+      const size = Number(r.detail.size ?? 0);
+      return row(
+        'sky',
+        '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+        'Descarga',
+        `${escape(name)} · ${fmtBytes(size)}`,
+        rel,
+        abs,
+      );
+    }
+    if (r.type === 'transcription') {
+      const model = (r.detail.model as string) ?? '—';
+      const lang = (r.detail.language as string) ?? 'auto';
+      const chars = Number(r.detail.chars ?? 0);
+      return row(
+        'fuchsia',
+        '<path d="M4 6h16M4 12h16M4 18h10"/>',
+        'Transcripción',
+        `${escape(model)} · ${escape(lang)} · ${fmt(chars)} caracteres`,
+        rel,
+        abs,
+      );
+    }
+    return '';
+  }
+
+  function row(
+    color: string,
+    icon: string,
+    title: string,
+    sub: string,
+    rel: string,
+    abs: string,
+  ): string {
+    const colors: Record<string, string> = {
+      brand: 'bg-brand-500/15 text-brand-300 border-brand-400/20',
+      sky: 'bg-sky-500/15 text-sky-300 border-sky-400/20',
+      fuchsia: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-400/20',
+    };
+    return `
+      <div class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+        <span class="w-9 h-9 rounded-lg ${colors[color]} grid place-items-center shrink-0 border">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-white text-sm font-medium">${title}</p>
+          <p class="text-slate-400 text-xs truncate">${sub}</p>
+        </div>
+        <span class="text-slate-500 text-xs shrink-0" title="${abs}">${rel}</span>
+      </div>`;
+  }
+
+  async function changePassword(e: Event) {
+    e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const err = document.getElementById('pw-error');
+    const ok = document.getElementById('pw-success');
+    err?.classList.add('hidden');
+    ok?.classList.add('hidden');
+    const fd = new FormData(form);
+    try {
+      const res = await apiFetch('/me/password', {
+        method: 'POST',
+        body: JSON.stringify({
+          currentPassword: String(fd.get('currentPassword') ?? ''),
+          newPassword: String(fd.get('newPassword') ?? ''),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? 'Error al cambiar contraseña.');
+      form.reset();
+      ok?.classList.remove('hidden');
+    } catch (e) {
+      if (err) {
+        err.textContent = (e as Error).message;
+        err.classList.remove('hidden');
+      }
+    }
+  }
+</script>

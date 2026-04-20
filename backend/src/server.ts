@@ -9,6 +9,7 @@ import { router as convertRouter } from './routes/convert.js';
 import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
 import { trackRouter } from './routes/track.js';
+import { meRouter } from './routes/me.js';
 import { startCleanupLoop } from './utils/cleanup.js';
 import { seedAdmin } from './services/auth.js';
 
@@ -31,6 +32,7 @@ app.get('/health', (_req, res) => {
 app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
 app.use('/track', trackRouter);
+app.use('/me', meRouter);
 app.use('/api', convertRouter);
 
 app.use((req, res) => {

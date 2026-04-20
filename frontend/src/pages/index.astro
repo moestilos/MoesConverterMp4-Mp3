@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import AuthNav from '../components/AuthNav.astro';
 import Converter from '../components/Converter.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <Layout>
@@ -53,16 +54,9 @@ import Converter from '../components/Converter.astro';
       </div>
     </section>
 
-    <footer class="mt-16 sm:mt-20 text-center text-xs sm:text-sm text-slate-500 px-2">
-      <p>
-        Construido con <span class="text-slate-300">Astro</span> ·
-        <span class="text-slate-300">Tailwind</span> ·
-        <span class="text-slate-300">Express</span> ·
-        <span class="text-slate-300">FFmpeg</span> ·
-        <span class="text-slate-300">Transformers.js</span>
-      </p>
-    </footer>
   </main>
+
+  <Footer />
 </Layout>
 
 <script>
