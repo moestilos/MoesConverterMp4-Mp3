@@ -60,9 +60,13 @@ export function clearAuth(): void {
   }
 }
 
+export interface ApiFetchOptions extends RequestInit {
+  timeout?: number;
+}
+
 export async function apiFetch(
   path: string,
-  init: RequestInit = {},
+  init: ApiFetchOptions = {},
 ): Promise<Response> {
   const token = getToken();
   const headers = new Headers(init.headers ?? {});
@@ -72,7 +76,47 @@ export async function apiFetch(
   if (init.body && !headers.has('Content-Type') && typeof init.body === 'string') {
     headers.set('Content-Type', 'application/json');
   }
-  return fetch(`${getApiUrl()}${path}`, { ...init, headers });
+
+  const timeout = init.timeout ?? 60_000;
+  const controller = new AbortController();
+  const externalSignal = init.signal;
+  const onAbort = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener('abort', onAbort);
+  }
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    return await fetch(`${getApiUrl()}${path}`, {
+      ...init,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error(
+        'El servidor tarda demasiado en responder. Inténtalo de nuevo.',
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+    if (externalSignal) externalSignal.removeEventListener('abort', onAbort);
+  }
+}
+
+// Pings /health para despertar el backend (Render free tiene cold start ~50s).
+// Sin auth header para evitar respuesta 401 si token está caducado.
+let warmupStarted = false;
+export function warmupBackend(): void {
+  if (warmupStarted) return;
+  warmupStarted = true;
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), 60_000);
+  fetch(`${getApiUrl()}/health`, { signal: ctrl.signal }).catch(() => {
+    /* silencioso */
+  });
 }
 
 export async function validateSession(): Promise<User | null> {

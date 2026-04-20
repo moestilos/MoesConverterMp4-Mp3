@@ -1,10 +1,13 @@
-import { apiFetch, setToken, setUser } from './auth';
+import { apiFetch, setToken, setUser, warmupBackend } from './auth';
 
 type Mode = 'login' | 'register';
 
 export function initAuthForm(mode: Mode): void {
   const form = document.getElementById('auth-form') as HTMLFormElement | null;
   if (!form) return;
+
+  // Despierta backend en segundo plano al cargar la página (Render free duerme).
+  warmupBackend();
 
   const errorBox = document.getElementById('form-error');
   const errorMsg = document.getElementById('form-error-msg');
@@ -66,11 +69,18 @@ export function initAuthForm(mode: Mode): void {
 
     setLoading(true);
 
+    // Si tarda >3s, avisa de cold start.
+    const slowTimer = setTimeout(() => {
+      const lbl = document.querySelector('#submit-spinner span');
+      if (lbl) lbl.textContent = 'Despertando servidor…';
+    }, 3000);
+
     try {
       let res: Response;
       if (mode === 'login') {
         res = await apiFetch('/auth/login', {
           method: 'POST',
+          timeout: 60_000,
           body: JSON.stringify({
             identifier: String(fd.get('identifier') ?? '').trim(),
             password,
@@ -79,6 +89,7 @@ export function initAuthForm(mode: Mode): void {
       } else {
         res = await apiFetch('/auth/register', {
           method: 'POST',
+          timeout: 60_000,
           body: JSON.stringify({
             email: String(fd.get('email') ?? '').trim(),
             username: String(fd.get('identifier') ?? '').trim(),
@@ -86,6 +97,7 @@ export function initAuthForm(mode: Mode): void {
           }),
         });
       }
+      clearTimeout(slowTimer);
 
       const data = await res.json();
       if (!res.ok) {
@@ -105,6 +117,7 @@ export function initAuthForm(mode: Mode): void {
           : '/';
       window.location.href = next;
     } catch (err) {
+      clearTimeout(slowTimer);
       setLoading(false);
       const msg = err instanceof Error ? err.message : 'Error desconocido.';
       showError(

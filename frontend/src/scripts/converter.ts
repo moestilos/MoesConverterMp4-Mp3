@@ -1,5 +1,6 @@
-import type { WhisperSize } from './transcribe';
+import type { TranscribeResult, WhisperSize } from './transcribe';
 import { getToken, trackTranscription } from './auth';
+import { toastError, toastSuccess } from './toast';
 
 type Stage =
   | 'idle'
@@ -24,9 +25,13 @@ interface Context {
   file: File | null;
   meta: UploadResponse | null;
   mp3Blob: Blob | null;
+  mp3Url: string | null;
   eventSource: EventSource | null;
   xhr: XMLHttpRequest | null;
   transcribeAbort: AbortController | null;
+  transcript: TranscribeResult | null;
+  transcriptModel: string;
+  transcriptLang: string;
 }
 
 function formatBytes(bytes: number): string {
@@ -73,9 +78,13 @@ export function initConverter(): void {
     file: null,
     meta: null,
     mp3Blob: null,
+    mp3Url: null,
     eventSource: null,
     xhr: null,
     transcribeAbort: null,
+    transcript: null,
+    transcriptModel: 'base',
+    transcriptLang: '',
   };
 
   const $ = <T extends Element = HTMLElement>(sel: string) =>
@@ -111,10 +120,20 @@ export function initConverter(): void {
   const btnAgain2 = $<HTMLButtonElement>('#btn-again-2');
   const btnRetry = $<HTMLButtonElement>('#btn-retry');
   const btnTranscribe = $<HTMLButtonElement>('#btn-transcribe');
+  const btnPlay = $<HTMLButtonElement>('#btn-play');
+  const iconPlay = $<HTMLElement>('#icon-play');
+  const iconPause = $<HTMLElement>('#icon-pause');
+  const audioEl = $<HTMLAudioElement>('#audio-el');
+  const audioSeek = $<HTMLInputElement>('#audio-seek');
+  const audioTime = $('#audio-time');
+  const audioTotal = $('#audio-total');
+  const audioPreview = $<HTMLElement>('#audio-preview');
+  const btnExportToggle = $<HTMLButtonElement>('#btn-export-toggle');
+  const exportMenu = $<HTMLElement>('#export-menu');
+  const exportOpts = root.querySelectorAll<HTMLButtonElement>('.export-opt');
   const btnTransCancel = $<HTMLButtonElement>('#btn-trans-cancel');
   const btnBackDone = $<HTMLButtonElement>('#btn-back-done');
   const btnCopyText = $<HTMLButtonElement>('#btn-copy-text');
-  const btnDownloadTxt = $<HTMLButtonElement>('#btn-download-txt');
   const whisperModel = $<HTMLSelectElement>('#whisper-model');
   const whisperLang = $<HTMLSelectElement>('#whisper-lang');
   const progressLabel = $('#progress-label');
@@ -183,6 +202,7 @@ export function initConverter(): void {
   function showError(msg: string) {
     if (errorMsg) errorMsg.textContent = msg;
     setStage('error');
+    toastError('Algo falló', msg);
   }
 
   function resetAll() {
@@ -190,6 +210,11 @@ export function initConverter(): void {
     ctx.file = null;
     ctx.meta = null;
     ctx.mp3Blob = null;
+    if (ctx.mp3Url) {
+      URL.revokeObjectURL(ctx.mp3Url);
+      ctx.mp3Url = null;
+    }
+    ctx.transcript = null;
     if (ctx.eventSource) {
       ctx.eventSource.close();
       ctx.eventSource = null;
@@ -203,6 +228,12 @@ export function initConverter(): void {
       ctx.transcribeAbort = null;
     }
     if (fileInput) fileInput.value = '';
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+    }
+    audioPreview?.classList.add('hidden');
+    exportMenu?.classList.add('hidden');
     uploadStatus?.classList.add('hidden');
     setUploadProgress(0, '');
     setConvertEnabled(false);
@@ -254,6 +285,7 @@ export function initConverter(): void {
 
   async function handleAudioFile(file: File) {
     ctx.mp3Blob = file;
+    attachAudioPreview(file);
     let durationSec = 0;
     try {
       const Ctx =
@@ -378,7 +410,9 @@ export function initConverter(): void {
         if (doneSub) {
           doneSub.textContent = `Tu MP3 está preparado (${formatBytes(blob.size)}).`;
         }
+        attachAudioPreview(blob);
         setStage('done');
+        toastSuccess('Conversión lista', `MP3 ${formatBytes(blob.size)} preparado.`);
       } catch (e) {
         showError(
           e instanceof Error ? e.message : 'No se pudo descargar el archivo.',
@@ -415,6 +449,27 @@ export function initConverter(): void {
     });
     if (!res.ok) throw new Error(`Descarga falló (${res.status}).`);
     return await res.blob();
+  }
+
+  function attachAudioPreview(blob: Blob) {
+    if (!audioEl || !audioPreview) return;
+    if (ctx.mp3Url) URL.revokeObjectURL(ctx.mp3Url);
+    ctx.mp3Url = URL.createObjectURL(blob);
+    audioEl.src = ctx.mp3Url;
+    audioEl.load();
+    audioPreview.classList.remove('hidden');
+    iconPlay?.classList.remove('hidden');
+    iconPause?.classList.add('hidden');
+    if (audioSeek) audioSeek.value = '0';
+    if (audioTime) audioTime.textContent = '0:00';
+    if (audioTotal) audioTotal.textContent = '0:00';
+  }
+
+  function formatSecShort(s: number): string {
+    if (!Number.isFinite(s) || s < 0) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${String(sec).padStart(2, '0')}`;
   }
 
   function downloadFromBlob(blob: Blob, filename: string) {
@@ -484,18 +539,26 @@ export function initConverter(): void {
       });
 
       const finalText = result.text.trim();
+      ctx.transcript = { text: finalText, chunks: result.chunks };
+      ctx.transcriptModel = `whisper-${size}`;
+      ctx.transcriptLang = lang ?? 'auto';
       if (transcriptText) transcriptText.value = finalText;
       if (transMeta) {
         const dur = ctx.meta?.durationSec
           ? formatDuration(ctx.meta.durationSec)
           : '—';
-        const modelLabel = `whisper-${size}`;
-        const langLabel = lang ?? 'auto';
-        transMeta.textContent = `${modelLabel} · ${langLabel} · duración ${dur}`;
+        const chunkInfo = result.chunks?.length
+          ? ` · ${result.chunks.length} segmentos`
+          : '';
+        transMeta.textContent = `${ctx.transcriptModel} · ${ctx.transcriptLang} · ${dur}${chunkInfo}`;
       }
       ctx.transcribeAbort = null;
       trackTranscription(`whisper-${size}`, lang, finalText.length);
       setStage('transcript');
+      toastSuccess(
+        'Transcripción completada',
+        `${finalText.length.toLocaleString('es-ES')} caracteres generados.`,
+      );
     } catch (e) {
       ctx.transcribeAbort = null;
       if ((e as Error).name === 'AbortError') {
@@ -523,29 +586,108 @@ export function initConverter(): void {
     if (!transcriptText) return;
     try {
       await navigator.clipboard.writeText(transcriptText.value);
-      const btn = btnCopyText;
-      if (btn) {
-        const prev = btn.innerHTML;
-        btn.innerHTML =
-          '<svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span class="hidden sm:inline">Copiado</span>';
-        setTimeout(() => {
-          btn.innerHTML = prev;
-        }, 1500);
-      }
+      toastSuccess('Copiado', 'Texto copiado al portapapeles.');
     } catch {
       transcriptText.select();
       document.execCommand('copy');
+      toastSuccess('Copiado', 'Texto copiado al portapapeles.');
     }
   }
 
-  function downloadTranscript() {
-    if (!transcriptText) return;
+  function baseName(): string {
     const raw = outputName?.value.trim() || ctx.meta?.name || 'transcripcion';
-    const name = sanitizeName(raw) || 'transcripcion';
-    const blob = new Blob([transcriptText.value], {
-      type: 'text/plain;charset=utf-8',
-    });
-    downloadFromBlob(blob, `${name}.txt`);
+    return sanitizeName(raw) || 'transcripcion';
+  }
+
+  function formatTimestampSRT(sec: number): string {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    const ms = Math.floor((sec - Math.floor(sec)) * 1000);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+  }
+
+  function formatTimestampVTT(sec: number): string {
+    return formatTimestampSRT(sec).replace(',', '.');
+  }
+
+  function buildSRT(): string {
+    const chunks = ctx.transcript?.chunks ?? [];
+    if (chunks.length === 0) {
+      return '1\n00:00:00,000 --> 00:00:10,000\n' + (ctx.transcript?.text ?? '') + '\n';
+    }
+    return chunks
+      .map((c, i) => {
+        const start = c.timestamp[0] ?? 0;
+        const end = c.timestamp[1] ?? start + 5;
+        return `${i + 1}\n${formatTimestampSRT(start)} --> ${formatTimestampSRT(end)}\n${c.text.trim()}\n`;
+      })
+      .join('\n');
+  }
+
+  function buildVTT(): string {
+    const chunks = ctx.transcript?.chunks ?? [];
+    const header = 'WEBVTT\n\n';
+    if (chunks.length === 0) {
+      return header + '00:00:00.000 --> 00:00:10.000\n' + (ctx.transcript?.text ?? '') + '\n';
+    }
+    return (
+      header +
+      chunks
+        .map((c) => {
+          const start = c.timestamp[0] ?? 0;
+          const end = c.timestamp[1] ?? start + 5;
+          return `${formatTimestampVTT(start)} --> ${formatTimestampVTT(end)}\n${c.text.trim()}\n`;
+        })
+        .join('\n')
+    );
+  }
+
+  function buildJSON(): string {
+    return JSON.stringify(
+      {
+        model: ctx.transcriptModel,
+        language: ctx.transcriptLang,
+        source: ctx.meta?.name,
+        durationSec: ctx.meta?.durationSec,
+        generatedAt: new Date().toISOString(),
+        text: ctx.transcript?.text ?? '',
+        chunks: ctx.transcript?.chunks ?? [],
+      },
+      null,
+      2,
+    );
+  }
+
+  function exportTranscript(format: 'txt' | 'srt' | 'vtt' | 'json') {
+    if (!ctx.transcript) return;
+    const name = baseName();
+    let content = '';
+    let mime = 'text/plain;charset=utf-8';
+    let ext = 'txt';
+    switch (format) {
+      case 'srt':
+        content = buildSRT();
+        mime = 'application/x-subrip;charset=utf-8';
+        ext = 'srt';
+        break;
+      case 'vtt':
+        content = buildVTT();
+        mime = 'text/vtt;charset=utf-8';
+        ext = 'vtt';
+        break;
+      case 'json':
+        content = buildJSON();
+        mime = 'application/json;charset=utf-8';
+        ext = 'json';
+        break;
+      default:
+        content = ctx.transcript.text;
+    }
+    const blob = new Blob([content], { type: mime });
+    downloadFromBlob(blob, `${name}.${ext}`);
+    exportMenu?.classList.add('hidden');
+    toastSuccess('Exportado', `${name}.${ext} descargado.`);
   }
 
   // --- Dropzone events ---
@@ -591,7 +733,65 @@ export function initConverter(): void {
   btnTransCancel?.addEventListener('click', cancelTranscribe);
   btnBackDone?.addEventListener('click', () => setStage('done'));
   btnCopyText?.addEventListener('click', copyTranscript);
-  btnDownloadTxt?.addEventListener('click', downloadTranscript);
+
+  btnExportToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    exportMenu?.classList.toggle('hidden');
+  });
+  exportOpts.forEach((opt) =>
+    opt.addEventListener('click', () => {
+      const fmt = opt.getAttribute('data-format') as
+        | 'txt'
+        | 'srt'
+        | 'vtt'
+        | 'json';
+      if (fmt) exportTranscript(fmt);
+    }),
+  );
+  document.addEventListener('click', (e) => {
+    if (!exportMenu || exportMenu.classList.contains('hidden')) return;
+    const target = e.target as Node;
+    if (
+      !exportMenu.contains(target) &&
+      !btnExportToggle?.contains(target)
+    ) {
+      exportMenu.classList.add('hidden');
+    }
+  });
+
+  // Audio player
+  if (audioEl) {
+    audioEl.addEventListener('loadedmetadata', () => {
+      if (audioTotal) audioTotal.textContent = formatSecShort(audioEl.duration);
+    });
+    audioEl.addEventListener('timeupdate', () => {
+      if (audioTime) audioTime.textContent = formatSecShort(audioEl.currentTime);
+      if (audioSeek && audioEl.duration) {
+        audioSeek.value = String((audioEl.currentTime / audioEl.duration) * 100);
+      }
+    });
+    audioEl.addEventListener('ended', () => {
+      iconPlay?.classList.remove('hidden');
+      iconPause?.classList.add('hidden');
+    });
+    audioEl.addEventListener('play', () => {
+      iconPlay?.classList.add('hidden');
+      iconPause?.classList.remove('hidden');
+    });
+    audioEl.addEventListener('pause', () => {
+      iconPlay?.classList.remove('hidden');
+      iconPause?.classList.add('hidden');
+    });
+  }
+  btnPlay?.addEventListener('click', () => {
+    if (!audioEl) return;
+    if (audioEl.paused) audioEl.play().catch(() => toastError('No se pudo reproducir'));
+    else audioEl.pause();
+  });
+  audioSeek?.addEventListener('input', () => {
+    if (!audioEl || !audioEl.duration) return;
+    audioEl.currentTime = (Number(audioSeek.value) / 100) * audioEl.duration;
+  });
 
   const onCancel = async () => {
     if (ctx.jobId) await cancelRemoteJob(ctx.jobId);

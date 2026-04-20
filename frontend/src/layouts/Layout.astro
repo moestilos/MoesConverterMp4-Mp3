@@ -49,9 +49,18 @@ const {
     <div class="bg-grid" aria-hidden="true"></div>
     <slot />
 
+    <!-- Toast container -->
+    <div id="toast-root"
+         class="fixed top-2 sm:top-auto sm:bottom-6 inset-x-0 sm:inset-x-auto sm:right-6 z-50
+                flex flex-col items-center sm:items-end gap-2 px-4 sm:px-0 pointer-events-none"
+         style="padding-top: env(safe-area-inset-top);"></div>
+
     <script>
       import { registerSW } from 'virtual:pwa-register';
+      import { warmupBackend } from '../scripts/auth';
       registerSW({ immediate: true });
+      // Despierta backend al cargar cualquier página (Render free cold start).
+      warmupBackend();
     </script>
   </body>
 </html>
