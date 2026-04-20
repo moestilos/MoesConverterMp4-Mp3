@@ -1,4 +1,5 @@
 import type { WhisperSize } from './transcribe';
+import { getToken, trackTranscription } from './auth';
 
 type Stage =
   | 'idle'
@@ -211,7 +212,11 @@ export function initConverter(): void {
 
   async function cancelRemoteJob(jobId: string) {
     try {
-      await fetch(`${ctx.apiUrl}/api/jobs/${jobId}`, { method: 'DELETE' });
+      const tok = getToken();
+      await fetch(`${ctx.apiUrl}/api/jobs/${jobId}`, {
+        method: 'DELETE',
+        headers: tok ? { Authorization: `Bearer ${tok}` } : undefined,
+      });
     } catch {
       /* silencioso */
     }
@@ -290,6 +295,8 @@ export function initConverter(): void {
     form.append('file', file);
 
     xhr.open('POST', `${ctx.apiUrl}/api/upload`);
+    const tok = getToken();
+    if (tok) xhr.setRequestHeader('Authorization', `Bearer ${tok}`);
     xhr.upload.onprogress = (ev) => {
       if (!ev.lengthComputable) return;
       const pct = (ev.loaded / ev.total) * 100;
@@ -339,7 +346,11 @@ export function initConverter(): void {
     setStage('progress');
     setProgress(0, 'Convirtiendo a MP3…', 'Iniciando FFmpeg', 'Conversión en curso');
 
-    const es = new EventSource(`${ctx.apiUrl}/api/convert/${ctx.jobId}`);
+    const tok = getToken();
+    const tokenQs = tok ? `?token=${encodeURIComponent(tok)}` : '';
+    const es = new EventSource(
+      `${ctx.apiUrl}/api/convert/${ctx.jobId}${tokenQs}`,
+    );
     ctx.eventSource = es;
 
     es.addEventListener('progress', (ev) => {
@@ -398,7 +409,10 @@ export function initConverter(): void {
 
   async function fetchMp3Blob(): Promise<Blob> {
     if (!ctx.jobId) throw new Error('Sin jobId.');
-    const res = await fetch(`${ctx.apiUrl}/api/download/${ctx.jobId}`);
+    const tok = getToken();
+    const res = await fetch(`${ctx.apiUrl}/api/download/${ctx.jobId}`, {
+      headers: tok ? { Authorization: `Bearer ${tok}` } : undefined,
+    });
     if (!res.ok) throw new Error(`Descarga falló (${res.status}).`);
     return await res.blob();
   }
@@ -469,7 +483,8 @@ export function initConverter(): void {
         },
       });
 
-      if (transcriptText) transcriptText.value = result.text.trim();
+      const finalText = result.text.trim();
+      if (transcriptText) transcriptText.value = finalText;
       if (transMeta) {
         const dur = ctx.meta?.durationSec
           ? formatDuration(ctx.meta.durationSec)
@@ -479,6 +494,7 @@ export function initConverter(): void {
         transMeta.textContent = `${modelLabel} · ${langLabel} · duración ${dur}`;
       }
       ctx.transcribeAbort = null;
+      trackTranscription(`whisper-${size}`, lang, finalText.length);
       setStage('transcript');
     } catch (e) {
       ctx.transcribeAbort = null;

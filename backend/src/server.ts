@@ -5,11 +5,16 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import { config } from './config.js';
-import { router } from './routes/convert.js';
+import { router as convertRouter } from './routes/convert.js';
+import { authRouter } from './routes/auth.js';
+import { adminRouter } from './routes/admin.js';
+import { trackRouter } from './routes/track.js';
 import { startCleanupLoop } from './utils/cleanup.js';
+import { seedAdmin } from './services/auth.js';
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(
   cors({
@@ -23,7 +28,10 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'moesconverter-backend' });
 });
 
-app.use('/api', router);
+app.use('/auth', authRouter);
+app.use('/admin', adminRouter);
+app.use('/track', trackRouter);
+app.use('/api', convertRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: `Not found: ${req.method} ${req.path}` });
@@ -38,6 +46,10 @@ app.use(
 );
 
 startCleanupLoop();
+
+seedAdmin().catch((err) => {
+  console.error('[seed]', err);
+});
 
 app.listen(config.port, () => {
   console.log(`[backend] MoesConverter API listening on :${config.port}`);

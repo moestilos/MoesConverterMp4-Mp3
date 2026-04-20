@@ -1,0 +1,424 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AuthNav from '../components/AuthNav.astro';
+---
+
+<Layout title="Panel admin · MoesConverter">
+  <AuthNav />
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-16">
+    <header class="mb-8 sm:mb-10">
+      <h1 class="text-2xl sm:text-4xl font-bold text-white">Panel de administración</h1>
+      <p class="text-slate-400 text-sm sm:text-base">Actividad de MoesConverter en tiempo real.</p>
+    </header>
+
+    <!-- KPIs -->
+    <section id="kpis" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Usuarios</p>
+        <p id="kpi-users" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Conversiones</p>
+        <p id="kpi-conversions" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Descargas</p>
+        <p id="kpi-downloads" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Transcripciones</p>
+        <p id="kpi-transcriptions" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">IPs únicas (24h)</p>
+        <p id="kpi-ips24" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">IPs únicas (7d)</p>
+        <p id="kpi-ips7" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Visitas (24h)</p>
+        <p id="kpi-visits24" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Visitas (7d)</p>
+        <p id="kpi-visits7" class="text-2xl sm:text-3xl font-bold text-white mt-1 tabular-nums">—</p>
+      </div>
+    </section>
+
+    <!-- Charts -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
+      <div class="glass rounded-2xl p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white font-semibold">Visitas (14 días)</h3>
+          <span class="text-xs text-slate-500">Total + IPs únicas</span>
+        </div>
+        <canvas id="chart-visits" height="220"></canvas>
+      </div>
+      <div class="glass rounded-2xl p-4 sm:p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white font-semibold">Conversiones vs descargas (14 días)</h3>
+          <span class="text-xs text-slate-500">MP4 → MP3</span>
+        </div>
+        <canvas id="chart-ops" height="220"></canvas>
+      </div>
+      <div class="glass rounded-2xl p-4 sm:p-6 lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white font-semibold">Transcripciones (14 días)</h3>
+          <span class="text-xs text-slate-500">Whisper local</span>
+        </div>
+        <canvas id="chart-trans" height="180"></canvas>
+      </div>
+    </section>
+
+    <!-- Top IPs -->
+    <section class="glass rounded-2xl p-4 sm:p-6 mb-8">
+      <h3 class="text-white font-semibold mb-4">Top IPs (últimos 7 días)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs uppercase text-slate-500">
+            <tr class="border-b border-white/10">
+              <th class="py-2 pr-4">IP</th>
+              <th class="py-2 pr-4">Hits</th>
+              <th class="py-2 pr-4">Última visita</th>
+            </tr>
+          </thead>
+          <tbody id="table-ips" class="text-slate-200"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Users -->
+    <section class="glass rounded-2xl p-4 sm:p-6">
+      <h3 class="text-white font-semibold mb-4">Usuarios registrados</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs uppercase text-slate-500">
+            <tr class="border-b border-white/10">
+              <th class="py-2 pr-4">#</th>
+              <th class="py-2 pr-4">Username</th>
+              <th class="py-2 pr-4">Email</th>
+              <th class="py-2 pr-4">Rol</th>
+              <th class="py-2 pr-4">Conv.</th>
+              <th class="py-2 pr-4">Desc.</th>
+              <th class="py-2 pr-4">Trans.</th>
+              <th class="py-2 pr-4">Alta</th>
+            </tr>
+          </thead>
+          <tbody id="table-users" class="text-slate-200"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  import { apiFetch, requireAdmin } from '../scripts/auth';
+  import {
+    Chart,
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend,
+    Filler,
+    BarController,
+    BarElement,
+  } from 'chart.js';
+
+  Chart.register(
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend,
+    Filler,
+    BarController,
+    BarElement,
+  );
+
+  // Defaults for dark theme
+  Chart.defaults.color = 'rgba(203,213,225,0.75)';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+  Chart.defaults.font.family =
+    'Inter, system-ui, -apple-system, Segoe UI, sans-serif';
+
+  const user = requireAdmin();
+  if (user) init();
+
+  type SeriesPoint = { day: string; count: number };
+
+  function fmt(n: number): string {
+    return new Intl.NumberFormat('es-ES').format(n);
+  }
+
+  async function init() {
+    const [overview, topIps, users] = await Promise.all([
+      fetchJson('/admin/overview'),
+      fetchJson('/admin/visits/top-ips?days=7'),
+      fetchJson('/admin/users'),
+    ]);
+
+    renderKpis(overview);
+    renderTopIps(topIps.ips ?? []);
+    renderUsers(users.users ?? []);
+
+    const [visits, uniqueIps, conv, dls, trans] = await Promise.all([
+      fetchSeries('visits'),
+      fetchSeries('unique_ips'),
+      fetchSeries('conversions'),
+      fetchSeries('downloads'),
+      fetchSeries('transcriptions'),
+    ]);
+
+    drawVisits(visits, uniqueIps);
+    drawOps(conv, dls);
+    drawTrans(trans);
+  }
+
+  async function fetchJson(path: string) {
+    const res = await apiFetch(path);
+    if (!res.ok) throw new Error(`GET ${path} → ${res.status}`);
+    return res.json();
+  }
+
+  async function fetchSeries(metric: string): Promise<SeriesPoint[]> {
+    const data = await fetchJson(`/admin/timeseries?metric=${metric}&days=14`);
+    return data.series ?? [];
+  }
+
+  function renderKpis(o: Record<string, number>) {
+    const map: Record<string, string> = {
+      'kpi-users': 'users',
+      'kpi-conversions': 'conversions',
+      'kpi-downloads': 'downloads',
+      'kpi-transcriptions': 'transcriptions',
+      'kpi-ips24': 'uniqueIps24h',
+      'kpi-ips7': 'uniqueIps7d',
+      'kpi-visits24': 'visits24h',
+      'kpi-visits7': 'visits7d',
+    };
+    for (const [id, key] of Object.entries(map)) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = fmt(o[key] ?? 0);
+    }
+  }
+
+  function mergeLabels(...series: SeriesPoint[][]): string[] {
+    const set = new Set<string>();
+    for (const s of series) for (const p of s) set.add(p.day);
+    return [...set].sort();
+  }
+  function align(labels: string[], series: SeriesPoint[]): number[] {
+    const m = new Map(series.map((p) => [p.day, p.count]));
+    return labels.map((l) => m.get(l) ?? 0);
+  }
+
+  function linearGradient(
+    ctx: CanvasRenderingContext2D,
+    c1: string,
+    c2: string,
+  ) {
+    const g = ctx.createLinearGradient(0, 0, 0, 220);
+    g.addColorStop(0, c1);
+    g.addColorStop(1, c2);
+    return g;
+  }
+
+  function drawVisits(visits: SeriesPoint[], ips: SeriesPoint[]) {
+    const el = document.getElementById('chart-visits') as HTMLCanvasElement;
+    if (!el) return;
+    const ctx = el.getContext('2d')!;
+    const labels = mergeLabels(visits, ips);
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Visitas',
+            data: align(labels, visits),
+            borderColor: '#8b5cf6',
+            backgroundColor: linearGradient(
+              ctx,
+              'rgba(139,92,246,0.35)',
+              'rgba(139,92,246,0)',
+            ),
+            borderWidth: 2,
+            pointRadius: 2,
+            tension: 0.35,
+            fill: true,
+          },
+          {
+            label: 'IPs únicas',
+            data: align(labels, ips),
+            borderColor: '#60a5fa',
+            backgroundColor: 'rgba(96,165,250,0)',
+            borderWidth: 2,
+            borderDash: [4, 4],
+            pointRadius: 2,
+            tension: 0.35,
+          },
+        ],
+      },
+      options: chartOpts(),
+    });
+  }
+
+  function drawOps(conv: SeriesPoint[], dls: SeriesPoint[]) {
+    const el = document.getElementById('chart-ops') as HTMLCanvasElement;
+    if (!el) return;
+    const ctx = el.getContext('2d')!;
+    const labels = mergeLabels(conv, dls);
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Conversiones',
+            data: align(labels, conv),
+            backgroundColor: 'rgba(96,135,255,0.75)',
+            borderRadius: 6,
+          },
+          {
+            label: 'Descargas',
+            data: align(labels, dls),
+            backgroundColor: 'rgba(124,58,237,0.75)',
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: chartOpts(),
+    });
+  }
+
+  function drawTrans(trans: SeriesPoint[]) {
+    const el = document.getElementById('chart-trans') as HTMLCanvasElement;
+    if (!el) return;
+    const ctx = el.getContext('2d')!;
+    const labels = trans.map((p) => p.day);
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Transcripciones',
+            data: trans.map((p) => p.count),
+            borderColor: '#10b981',
+            backgroundColor: linearGradient(
+              ctx,
+              'rgba(16,185,129,0.3)',
+              'rgba(16,185,129,0)',
+            ),
+            borderWidth: 2,
+            pointRadius: 3,
+            tension: 0.35,
+            fill: true,
+          },
+        ],
+      },
+      options: chartOpts(),
+    });
+  }
+
+  function chartOpts() {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index' as const, intersect: false },
+      plugins: {
+        legend: {
+          labels: { color: 'rgba(203,213,225,0.85)', font: { size: 12 } },
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,0.95)',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          padding: 10,
+          titleColor: '#fff',
+          bodyColor: '#e2e8f0',
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: 'rgba(148,163,184,0.8)', maxRotation: 0, autoSkip: true },
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          ticks: { color: 'rgba(148,163,184,0.8)', precision: 0 },
+          beginAtZero: true,
+        },
+      },
+    } as const;
+  }
+
+  function renderTopIps(rows: Array<{ ip: string; hits: number; last_seen: string }>) {
+    const tbody = document.getElementById('table-ips');
+    if (!tbody) return;
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td class="py-3 text-slate-500" colspan="3">Sin datos todavía.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows
+      .map(
+        (r) => `
+        <tr class="border-b border-white/5">
+          <td class="py-2 pr-4 font-mono text-xs sm:text-sm">${escape(r.ip)}</td>
+          <td class="py-2 pr-4 tabular-nums">${fmt(r.hits)}</td>
+          <td class="py-2 pr-4 text-slate-400 text-xs">${new Date(r.last_seen).toLocaleString('es-ES')}</td>
+        </tr>`,
+      )
+      .join('');
+  }
+
+  function renderUsers(
+    rows: Array<{
+      id: number;
+      username: string;
+      email: string;
+      role: string;
+      conversions: number;
+      downloads: number;
+      transcriptions: number;
+      created_at: string;
+    }>,
+  ) {
+    const tbody = document.getElementById('table-users');
+    if (!tbody) return;
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td class="py-3 text-slate-500" colspan="8">Sin usuarios.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows
+      .map(
+        (u) => `
+        <tr class="border-b border-white/5">
+          <td class="py-2 pr-4 text-slate-500">${u.id}</td>
+          <td class="py-2 pr-4 font-medium text-white">@${escape(u.username)}</td>
+          <td class="py-2 pr-4 text-slate-300 text-xs sm:text-sm">${escape(u.email)}</td>
+          <td class="py-2 pr-4"><span class="${u.role === 'admin' ? 'text-accent-400' : 'text-slate-400'} text-xs uppercase">${escape(u.role)}</span></td>
+          <td class="py-2 pr-4 tabular-nums">${fmt(u.conversions)}</td>
+          <td class="py-2 pr-4 tabular-nums">${fmt(u.downloads)}</td>
+          <td class="py-2 pr-4 tabular-nums">${fmt(u.transcriptions)}</td>
+          <td class="py-2 pr-4 text-slate-500 text-xs">${new Date(u.created_at).toLocaleDateString('es-ES')}</td>
+        </tr>`,
+      )
+      .join('');
+  }
+
+  function escape(s: string): string {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>

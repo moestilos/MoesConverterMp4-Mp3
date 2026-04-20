@@ -1,0 +1,55 @@
+---
+---
+<nav id="auth-nav" class="fixed top-0 inset-x-0 z-20 px-4 sm:px-6 py-3 flex items-center justify-between glass border-b border-white/5">
+  <a href="/" class="flex items-center gap-2 text-white font-semibold text-sm sm:text-base">
+    <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 grid place-items-center text-xs">M</span>
+    MoesConverter
+  </a>
+  <div class="flex items-center gap-2 sm:gap-3" id="auth-nav-right">
+    <span id="nav-user" class="hidden text-slate-300 text-sm"></span>
+    <a id="nav-admin" href="/admin" class="hidden btn-ghost text-xs sm:text-sm">Admin</a>
+    <button id="nav-logout" class="hidden btn-ghost text-xs sm:text-sm" type="button">Salir</button>
+    <a id="nav-login" href="/login" class="hidden btn-ghost text-xs sm:text-sm">Entrar</a>
+    <a id="nav-register" href="/register" class="hidden btn-primary text-xs sm:text-sm py-2 px-3">Registrarse</a>
+  </div>
+</nav>
+
+<script>
+  import { clearAuth, getUser, getToken, validateSession } from '../scripts/auth';
+  const navUser = document.getElementById('nav-user');
+  const navAdmin = document.getElementById('nav-admin');
+  const navLogout = document.getElementById('nav-logout');
+  const navLogin = document.getElementById('nav-login');
+  const navRegister = document.getElementById('nav-register');
+
+  function render(user: { username: string; role: string } | null) {
+    if (user) {
+      if (navUser) {
+        navUser.textContent = `@${user.username}`;
+        navUser.classList.remove('hidden');
+      }
+      navLogout?.classList.remove('hidden');
+      if (user.role === 'admin') navAdmin?.classList.remove('hidden');
+      navLogin?.classList.add('hidden');
+      navRegister?.classList.add('hidden');
+    } else {
+      navUser?.classList.add('hidden');
+      navAdmin?.classList.add('hidden');
+      navLogout?.classList.add('hidden');
+      navLogin?.classList.remove('hidden');
+      navRegister?.classList.remove('hidden');
+    }
+  }
+
+  const cached = getUser();
+  render(cached);
+
+  if (getToken()) {
+    validateSession().then((u) => render(u));
+  }
+
+  navLogout?.addEventListener('click', () => {
+    clearAuth();
+    window.location.href = '/login';
+  });
+</script>

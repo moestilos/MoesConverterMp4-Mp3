@@ -18,4 +18,9 @@ export const config = {
   outputDir: path.resolve(backendRoot, 'outputs'),
   fileTtlMs: Number(process.env.FILE_TTL_MS ?? 15 * 60 * 1000),
   ffmpegPath: process.env.FFMPEG_PATH,
+  databaseUrl: process.env.DATABASE_URL ?? '',
+  jwtSecret: process.env.JWT_SECRET ?? '',
+  adminEmail: process.env.ADMIN_EMAIL ?? 'gmateosoficial@gmail.com',
+  adminUsername: process.env.ADMIN_USERNAME ?? 'momo',
+  adminPassword: process.env.ADMIN_PASSWORD ?? '',
 } as const;

@@ -6,6 +6,8 @@ import { config } from '../config.js';
 import { createJob, getJob, updateJob, deleteJob } from '../services/jobs.js';
 import { probe, convertToMp3 } from '../services/ffmpeg.js';
 import { safeUnlink } from '../utils/cleanup.js';
+import { requireAuth, verifyToken } from '../services/auth.js';
+import { db, schema } from '../db/index.js';
 
 fs.mkdirSync(config.uploadDir, { recursive: true });
 fs.mkdirSync(config.outputDir, { recursive: true });
@@ -31,6 +33,8 @@ const upload = multer({
 });
 
 export const router = Router();
+
+router.use(requireAuth);
 
 router.post('/upload', (req, res, next) => {
   upload.single('file')(req, res, async (err) => {
@@ -116,12 +120,27 @@ router.get('/convert/:id', (req: Request, res: Response) => {
       send('progress', { progress: p });
     },
   })
-    .then(() => {
+    .then(async () => {
       updateJob(job.id, { status: 'ready', progress: 100 });
       send('progress', { progress: 100 });
       send('done', { jobId: job.id });
       clearInterval(heartbeat);
       res.end();
+      const userId = req.user?.sub;
+      if (userId) {
+        try {
+          const outStat = fs.statSync(outputPath);
+          await db.insert(schema.conversions).values({
+            userId,
+            jobId: job.id,
+            sourceSize: job.size,
+            outputSize: outStat.size,
+            durationSec: Math.round(job.durationSec),
+          });
+        } catch (err) {
+          console.error('[convert/log]', err);
+        }
+      }
     })
     .catch((err: Error) => {
       updateJob(job.id, { status: 'error', error: err.message });
@@ -153,9 +172,30 @@ router.get('/download/:id', (req: Request, res: Response) => {
   stream.on('error', () => res.status(500).end());
   stream.pipe(res);
 
+  const userId = req.user?.sub;
+  const outputPath = job.outputPath;
+  let size = 0;
+  try {
+    size = fs.statSync(outputPath).size;
+  } catch {
+    /* noop */
+  }
+
   res.on('close', async () => {
+    if (userId) {
+      try {
+        await db.insert(schema.downloads).values({
+          userId,
+          jobId: job.id,
+          filename: `${safeName}.mp3`,
+          size,
+        });
+      } catch (err) {
+        console.error('[download/log]', err);
+      }
+    }
     await safeUnlink(job.inputPath);
-    await safeUnlink(job.outputPath);
+    await safeUnlink(outputPath);
     deleteJob(job.id);
   });
 });
