@@ -10,7 +10,7 @@ services:
       - key: PORT
         value: 4000
       - key: CORS_ORIGIN
-        value: https://moesconverter-frontend.vercel.app
+        value: https://moesconverter.vercel.app,https://moesconverter-frontend.vercel.app
       - key: MAX_FILE_SIZE
         value: 1073741824
       - key: FILE_TTL_MS
