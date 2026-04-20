@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: moesconverter-backend
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: CORS_ORIGIN
+        value: https://moesconverter-frontend.vercel.app
+      - key: MAX_FILE_SIZE
+        value: 104857600
+      - key: FILE_TTL_MS
+        value: 900000
+    autoDeploy: true
