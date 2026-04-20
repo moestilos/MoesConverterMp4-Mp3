@@ -81,7 +81,13 @@ export function initConverter(): void {
   const fileSize = $('#file-size');
   const fileDuration = $('#file-duration');
   const outputName = $<HTMLInputElement>('#output-name');
+  const uploadStatus = $<HTMLElement>('#upload-status');
+  const uploadLabel = $('#upload-label');
+  const uploadPercent = $('#upload-percent');
+  const uploadBar = $<HTMLElement>('#upload-bar');
+  const uploadSub = $('#upload-sub');
   const btnConvert = $<HTMLButtonElement>('#btn-convert');
+  const btnConvertLabel = $('#btn-convert-label');
   const btnCancel = $<HTMLButtonElement>('#btn-cancel');
   const btnCancel2 = $<HTMLButtonElement>('#btn-cancel-2');
   const btnDownload = $<HTMLButtonElement>('#btn-download');
@@ -127,6 +133,9 @@ export function initConverter(): void {
       ctx.xhr = null;
     }
     if (fileInput) fileInput.value = '';
+    uploadStatus?.classList.add('hidden');
+    setUploadProgress(0, '');
+    setConvertEnabled(false);
     setStage('idle');
   }
 
@@ -134,6 +143,21 @@ export function initConverter(): void {
     try {
       await fetch(`${ctx.apiUrl}/api/jobs/${jobId}`, { method: 'DELETE' });
     } catch { /* silencioso */ }
+  }
+
+  function setUploadProgress(pct: number, sub?: string) {
+    const clamped = Math.min(100, Math.max(0, pct));
+    if (uploadBar) uploadBar.style.width = `${clamped}%`;
+    if (uploadPercent) uploadPercent.textContent = `${Math.floor(clamped)}%`;
+    if (sub !== undefined && uploadSub) uploadSub.textContent = sub;
+  }
+
+  function setConvertEnabled(enabled: boolean) {
+    if (!btnConvert) return;
+    btnConvert.disabled = !enabled;
+    if (btnConvertLabel) {
+      btnConvertLabel.textContent = enabled ? 'Convertir a MP3' : 'Subiendo…';
+    }
   }
 
   function handleFile(file: File) {
@@ -150,6 +174,10 @@ export function initConverter(): void {
     if (fileSize) fileSize.textContent = formatBytes(file.size);
     if (fileDuration) fileDuration.textContent = 'Analizando…';
     if (outputName) outputName.value = sanitizeName(file.name) || 'audio';
+    uploadStatus?.classList.remove('hidden');
+    if (uploadLabel) uploadLabel.textContent = 'Subiendo archivo…';
+    setUploadProgress(0, `0 / ${formatBytes(file.size)}`);
+    setConvertEnabled(false);
     setStage('ready');
     uploadFile(file);
   }
@@ -164,11 +192,11 @@ export function initConverter(): void {
     xhr.upload.onprogress = (ev) => {
       if (!ev.lengthComputable) return;
       const pct = (ev.loaded / ev.total) * 100;
-      if (stages.progress && !stages.progress.classList.contains('hidden')) {
-        setProgress(pct * 0.3, 'Subiendo archivo…',
-          `${formatBytes(ev.loaded)} / ${formatBytes(ev.total)}`,
-          'Fase 1 de 2 · Subida');
-      }
+      setUploadProgress(pct, `${formatBytes(ev.loaded)} / ${formatBytes(ev.total)}`);
+    };
+    xhr.upload.onload = () => {
+      if (uploadLabel) uploadLabel.textContent = 'Analizando video…';
+      setUploadProgress(100, 'Leyendo metadatos con FFmpeg…');
     };
     xhr.onload = () => {
       ctx.xhr = null;
@@ -178,6 +206,9 @@ export function initConverter(): void {
           ctx.meta = data;
           ctx.jobId = data.jobId;
           if (fileDuration) fileDuration.textContent = formatDuration(data.durationSec);
+          if (uploadLabel) uploadLabel.textContent = 'Subida completada';
+          setUploadProgress(100, 'Listo para convertir');
+          setConvertEnabled(true);
         } catch {
           showError('Respuesta del servidor inválida.');
         }
@@ -203,7 +234,7 @@ export function initConverter(): void {
       return;
     }
     setStage('progress');
-    setProgress(30, 'Convirtiendo a MP3…', 'FFmpeg procesando audio', 'Fase 2 de 2 · Conversión');
+    setProgress(0, 'Convirtiendo a MP3…', 'Iniciando FFmpeg', 'Conversión en curso');
 
     const es = new EventSource(`${ctx.apiUrl}/api/convert/${ctx.jobId}`);
     ctx.eventSource = es;
@@ -211,10 +242,9 @@ export function initConverter(): void {
     es.addEventListener('progress', (ev) => {
       try {
         const { progress } = JSON.parse((ev as MessageEvent).data);
-        const mapped = 30 + (progress / 100) * 70;
-        setProgress(mapped, 'Convirtiendo a MP3…',
+        setProgress(progress, 'Convirtiendo a MP3…',
           `Procesado ${Math.floor(progress)}% del audio`,
-          'Fase 2 de 2 · Conversión');
+          'Conversión en curso');
       } catch { /* noop */ }
     });
 

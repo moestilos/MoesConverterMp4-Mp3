@@ -127,10 +127,21 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
       </div>
     </div>
 
+    <div id="upload-status" class="mt-6 hidden">
+      <div class="flex items-center justify-between text-sm mb-2">
+        <span id="upload-label" class="text-slate-300">Subiendo archivo…</span>
+        <span id="upload-percent" class="font-mono text-slate-200 tabular-nums">0%</span>
+      </div>
+      <div class="progress-track">
+        <div id="upload-bar" class="progress-bar" style="width: 0%"></div>
+      </div>
+      <p id="upload-sub" class="mt-2 text-xs text-slate-500"></p>
+    </div>
+
     <div class="mt-6 flex flex-col sm:flex-row gap-3">
-      <button id="btn-convert" type="button" class="btn-primary flex-1">
+      <button id="btn-convert" type="button" class="btn-primary flex-1" disabled>
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9z"/></svg>
-        Convertir a MP3
+        <span id="btn-convert-label">Subiendo…</span>
       </button>
       <button id="btn-cancel-2" type="button" class="btn-ghost">
         Cancelar
