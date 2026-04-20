@@ -50,7 +50,10 @@ export function initConverter(): void {
   const apiUrl =
     root.getAttribute('data-api-url')?.replace(/\/$/, '') ??
     'http://localhost:4000';
-  const maxMb = Number(root.getAttribute('data-max-mb') ?? 100);
+  const maxMb = Number(root.getAttribute('data-max-mb') ?? 1024);
+  const maxLabel =
+    root.getAttribute('data-max-label') ??
+    (maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`);
   const ctx: Context = {
     apiUrl,
     maxBytes: maxMb * 1024 * 1024,
@@ -139,7 +142,7 @@ export function initConverter(): void {
       return;
     }
     if (file.size > ctx.maxBytes) {
-      showError(`El archivo supera ${maxMb} MB.`);
+      showError(`El archivo supera ${maxLabel}.`);
       return;
     }
     ctx.file = file;

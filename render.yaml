@@ -12,7 +12,7 @@ services:
       - key: CORS_ORIGIN
         value: https://moesconverter-frontend.vercel.app
       - key: MAX_FILE_SIZE
-        value: 104857600
+        value: 1073741824
       - key: FILE_TTL_MS
         value: 900000
     autoDeploy: true

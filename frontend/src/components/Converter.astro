@@ -1,6 +1,7 @@
 ---
 const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:4000';
-const maxMb = 100;
+const maxMb = 1024;
+const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
 ---
 
 <section
@@ -8,6 +9,7 @@ const maxMb = 100;
   class="glass rounded-3xl p-6 sm:p-10 shadow-card"
   data-api-url={apiUrl}
   data-max-mb={maxMb}
+  data-max-label={maxLabel}
 >
   <!-- Stage: IDLE (dropzone) -->
   <div data-stage="idle">
@@ -44,7 +46,7 @@ const maxMb = 100;
         </h3>
         <p class="text-slate-400 mb-5 max-w-md">
           o haz clic para seleccionar. MP4, MOV, WebM, AVI…
-          <span class="text-slate-500">hasta {maxMb} MB.</span>
+          <span class="text-slate-500">hasta {maxLabel}.</span>
         </p>
         <span class="btn-ghost text-sm pointer-events-none">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

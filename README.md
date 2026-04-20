@@ -13,7 +13,7 @@ Convertidor **MP4 → MP3** profesional. Rápido, privado, con UI premium.
 ## ✨ Funcionalidad
 
 - Dropzone con drag & drop y selector.
-- Validación de tipo de archivo (solo video) y tamaño (100 MB por defecto).
+- Validación de tipo de archivo (solo video) y tamaño (1 GB por defecto).
 - Upload real con progreso de subida (`XMLHttpRequest`).
 - Análisis del video con `ffprobe` (nombre, tamaño, duración).
 - Conversión real con FFmpeg a MP3 192 kbps.
@@ -155,7 +155,7 @@ data: {"jobId": "abc123"}
 |------------------|----------------------------|------------------------------------------------------|
 | `PORT`           | `4000`                     | Puerto del servidor.                                |
 | `CORS_ORIGIN`    | `http://localhost:4321`    | Orígenes permitidos (lista separada por comas o `*`). |
-| `MAX_FILE_SIZE`  | `104857600` (100 MB)       | Tamaño máximo por upload, en bytes.                 |
+| `MAX_FILE_SIZE`  | `1073741824` (1 GB)        | Tamaño máximo por upload, en bytes.                 |
 | `FILE_TTL_MS`    | `900000` (15 min)          | TTL de archivos temporales.                         |
 | `FFMPEG_PATH`    | *(auto)*                   | Ruta al binario de `ffmpeg` si no está en PATH.     |
 
