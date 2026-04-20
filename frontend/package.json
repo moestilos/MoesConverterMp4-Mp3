@@ -13,8 +13,16 @@
   },
   "dependencies": {
     "@astrojs/tailwind": "^5.1.4",
+    "@huggingface/transformers": "^3.0.2",
+    "@vite-pwa/astro": "^0.5.0",
     "astro": "^5.0.5",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "vite-plugin-pwa": "^0.21.1",
+    "workbox-window": "^7.3.0"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@vite-pwa/assets-generator": "^0.2.6"
   },
   "engines": {
     "node": ">=20"

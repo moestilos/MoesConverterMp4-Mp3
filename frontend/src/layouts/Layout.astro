@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { pwaInfo } from 'virtual:pwa-info';
 
 interface Props {
   title?: string;
@@ -8,7 +9,7 @@ interface Props {
 
 const {
   title = 'MoesConverter · MP4 → MP3',
-  description = 'Convierte MP4 a MP3 al instante. Rápido, privado, sin registro.',
+  description = 'Convierte MP4 a MP3 y transcribe audio a texto. Rápido, privado, sin registro.',
 } = Astro.props;
 ---
 
@@ -16,12 +17,23 @@ const {
 <html lang="es" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#07070b" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- iOS / Safari PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MoesConverter" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,11 +41,17 @@ const {
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     />
+    {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
     <title>{title}</title>
   </head>
   <body class="min-h-screen bg-[#07070b] text-slate-100 antialiased font-sans overflow-x-hidden">
     <div class="bg-aurora" aria-hidden="true"></div>
     <div class="bg-grid" aria-hidden="true"></div>
     <slot />
+
+    <script>
+      import { registerSW } from 'virtual:pwa-register';
+      registerSW({ immediate: true });
+    </script>
   </body>
 </html>

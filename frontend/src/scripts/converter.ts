@@ -1,4 +1,13 @@
-type Stage = 'idle' | 'ready' | 'progress' | 'done' | 'error';
+import type { WhisperSize } from './transcribe';
+
+type Stage =
+  | 'idle'
+  | 'ready'
+  | 'progress'
+  | 'done'
+  | 'transcribing'
+  | 'transcript'
+  | 'error';
 
 interface UploadResponse {
   jobId: string;
@@ -13,8 +22,10 @@ interface Context {
   jobId: string | null;
   file: File | null;
   meta: UploadResponse | null;
+  mp3Blob: Blob | null;
   eventSource: EventSource | null;
   xhr: XMLHttpRequest | null;
+  transcribeAbort: AbortController | null;
 }
 
 function formatBytes(bytes: number): string {
@@ -60,8 +71,10 @@ export function initConverter(): void {
     jobId: null,
     file: null,
     meta: null,
+    mp3Blob: null,
     eventSource: null,
     xhr: null,
+    transcribeAbort: null,
   };
 
   const $ = <T extends Element = HTMLElement>(sel: string) =>
@@ -71,6 +84,8 @@ export function initConverter(): void {
     ready: root.querySelector('[data-stage="ready"]'),
     progress: root.querySelector('[data-stage="progress"]'),
     done: root.querySelector('[data-stage="done"]'),
+    transcribing: root.querySelector('[data-stage="transcribing"]'),
+    transcript: root.querySelector('[data-stage="transcript"]'),
     error: root.querySelector('[data-stage="error"]'),
   };
 
@@ -92,12 +107,28 @@ export function initConverter(): void {
   const btnCancel2 = $<HTMLButtonElement>('#btn-cancel-2');
   const btnDownload = $<HTMLButtonElement>('#btn-download');
   const btnAgain = $<HTMLButtonElement>('#btn-again');
+  const btnAgain2 = $<HTMLButtonElement>('#btn-again-2');
   const btnRetry = $<HTMLButtonElement>('#btn-retry');
+  const btnTranscribe = $<HTMLButtonElement>('#btn-transcribe');
+  const btnTransCancel = $<HTMLButtonElement>('#btn-trans-cancel');
+  const btnBackDone = $<HTMLButtonElement>('#btn-back-done');
+  const btnCopyText = $<HTMLButtonElement>('#btn-copy-text');
+  const btnDownloadTxt = $<HTMLButtonElement>('#btn-download-txt');
+  const whisperModel = $<HTMLSelectElement>('#whisper-model');
+  const whisperLang = $<HTMLSelectElement>('#whisper-lang');
   const progressLabel = $('#progress-label');
   const progressSub = $('#progress-sub');
   const progressPercent = $('#progress-percent');
   const progressBar = $<HTMLElement>('#progress-bar');
   const progressStage = $('#progress-stage');
+  const transLabel = $('#trans-label');
+  const transSub = $('#trans-sub');
+  const transPercent = $('#trans-percent');
+  const transBar = $<HTMLElement>('#trans-bar');
+  const transStage = $('#trans-stage');
+  const transMeta = $('#trans-meta');
+  const transcriptText = $<HTMLTextAreaElement>('#transcript-text');
+  const doneSub = $('#done-sub');
   const errorMsg = $('#error-msg');
 
   function setStage(s: Stage) {
@@ -115,36 +146,6 @@ export function initConverter(): void {
     if (stageTxt && progressStage) progressStage.textContent = stageTxt;
   }
 
-  function showError(msg: string) {
-    if (errorMsg) errorMsg.textContent = msg;
-    setStage('error');
-  }
-
-  function resetAll() {
-    ctx.jobId = null;
-    ctx.file = null;
-    ctx.meta = null;
-    if (ctx.eventSource) {
-      ctx.eventSource.close();
-      ctx.eventSource = null;
-    }
-    if (ctx.xhr) {
-      ctx.xhr.abort();
-      ctx.xhr = null;
-    }
-    if (fileInput) fileInput.value = '';
-    uploadStatus?.classList.add('hidden');
-    setUploadProgress(0, '');
-    setConvertEnabled(false);
-    setStage('idle');
-  }
-
-  async function cancelRemoteJob(jobId: string) {
-    try {
-      await fetch(`${ctx.apiUrl}/api/jobs/${jobId}`, { method: 'DELETE' });
-    } catch { /* silencioso */ }
-  }
-
   function setUploadProgress(pct: number, sub?: string) {
     const clamped = Math.min(100, Math.max(0, pct));
     if (uploadBar) uploadBar.style.width = `${clamped}%`;
@@ -160,9 +161,65 @@ export function initConverter(): void {
     }
   }
 
+  function setTransProgress(
+    pct: number | null,
+    label?: string,
+    sub?: string,
+    stageTxt?: string,
+  ) {
+    if (transBar) {
+      if (pct === null) transBar.style.width = '100%';
+      else transBar.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+    }
+    if (transPercent) {
+      transPercent.textContent = pct === null ? '…' : `${Math.floor(pct)}%`;
+    }
+    if (label && transLabel) transLabel.textContent = label;
+    if (sub !== undefined && transSub) transSub.textContent = sub;
+    if (stageTxt && transStage) transStage.textContent = stageTxt;
+  }
+
+  function showError(msg: string) {
+    if (errorMsg) errorMsg.textContent = msg;
+    setStage('error');
+  }
+
+  function resetAll() {
+    ctx.jobId = null;
+    ctx.file = null;
+    ctx.meta = null;
+    ctx.mp3Blob = null;
+    if (ctx.eventSource) {
+      ctx.eventSource.close();
+      ctx.eventSource = null;
+    }
+    if (ctx.xhr) {
+      ctx.xhr.abort();
+      ctx.xhr = null;
+    }
+    if (ctx.transcribeAbort) {
+      ctx.transcribeAbort.abort();
+      ctx.transcribeAbort = null;
+    }
+    if (fileInput) fileInput.value = '';
+    uploadStatus?.classList.add('hidden');
+    setUploadProgress(0, '');
+    setConvertEnabled(false);
+    if (transcriptText) transcriptText.value = '';
+    setStage('idle');
+  }
+
+  async function cancelRemoteJob(jobId: string) {
+    try {
+      await fetch(`${ctx.apiUrl}/api/jobs/${jobId}`, { method: 'DELETE' });
+    } catch {
+      /* silencioso */
+    }
+  }
+
   function handleFile(file: File) {
-    if (!file.type.startsWith('video/')) {
-      showError('Solo se aceptan archivos de video.');
+    if (!file.type.startsWith('video/') && !file.type.startsWith('audio/')) {
+      showError('Solo se aceptan archivos de audio o video.');
       return;
     }
     if (file.size > ctx.maxBytes) {
@@ -195,7 +252,7 @@ export function initConverter(): void {
       setUploadProgress(pct, `${formatBytes(ev.loaded)} / ${formatBytes(ev.total)}`);
     };
     xhr.upload.onload = () => {
-      if (uploadLabel) uploadLabel.textContent = 'Analizando video…';
+      if (uploadLabel) uploadLabel.textContent = 'Analizando archivo…';
       setUploadProgress(100, 'Leyendo metadatos con FFmpeg…');
     };
     xhr.onload = () => {
@@ -217,7 +274,9 @@ export function initConverter(): void {
         try {
           const data = JSON.parse(xhr.responseText);
           if (data?.error) msg = data.error;
-        } catch { /* noop */ }
+        } catch {
+          /* noop */
+        }
         showError(msg);
       }
     };
@@ -242,17 +301,34 @@ export function initConverter(): void {
     es.addEventListener('progress', (ev) => {
       try {
         const { progress } = JSON.parse((ev as MessageEvent).data);
-        setProgress(progress, 'Convirtiendo a MP3…',
+        setProgress(
+          progress,
+          'Convirtiendo a MP3…',
           `Procesado ${Math.floor(progress)}% del audio`,
-          'Conversión en curso');
-      } catch { /* noop */ }
+          'Conversión en curso',
+        );
+      } catch {
+        /* noop */
+      }
     });
 
-    es.addEventListener('done', () => {
-      setProgress(100, 'Finalizando…', 'Listo', 'Completado');
+    es.addEventListener('done', async () => {
+      setProgress(100, 'Finalizando…', 'Descargando audio convertido', 'Completado');
       es.close();
       ctx.eventSource = null;
-      setTimeout(() => setStage('done'), 400);
+
+      try {
+        const blob = await fetchMp3Blob();
+        ctx.mp3Blob = blob;
+        if (doneSub) {
+          doneSub.textContent = `Tu MP3 está preparado (${formatBytes(blob.size)}).`;
+        }
+        setStage('done');
+      } catch (e) {
+        showError(
+          e instanceof Error ? e.message : 'No se pudo descargar el archivo.',
+        );
+      }
     });
 
     es.addEventListener('error', (ev) => {
@@ -260,7 +336,9 @@ export function initConverter(): void {
       try {
         const data = JSON.parse((ev as MessageEvent).data ?? '{}');
         if (data?.error) msg = data.error;
-      } catch { /* noop */ }
+      } catch {
+        /* noop */
+      }
       es.close();
       ctx.eventSource = null;
       showError(msg);
@@ -274,17 +352,134 @@ export function initConverter(): void {
     };
   }
 
-  function download() {
-    if (!ctx.jobId) return;
-    const raw = outputName?.value.trim() || ctx.meta?.name || 'audio';
-    const name = sanitizeName(raw) || 'audio';
-    const url = `${ctx.apiUrl}/api/download/${ctx.jobId}?filename=${encodeURIComponent(name)}`;
+  async function fetchMp3Blob(): Promise<Blob> {
+    if (!ctx.jobId) throw new Error('Sin jobId.');
+    const res = await fetch(`${ctx.apiUrl}/api/download/${ctx.jobId}`);
+    if (!res.ok) throw new Error(`Descarga falló (${res.status}).`);
+    return await res.blob();
+  }
+
+  function downloadFromBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${name}.mp3`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function download() {
+    if (!ctx.mp3Blob) return;
+    const raw = outputName?.value.trim() || ctx.meta?.name || 'audio';
+    const name = sanitizeName(raw) || 'audio';
+    downloadFromBlob(ctx.mp3Blob, `${name}.mp3`);
+  }
+
+  async function startTranscribe() {
+    if (!ctx.mp3Blob) {
+      showError('No hay audio disponible para transcribir.');
+      return;
+    }
+    const size = (whisperModel?.value as WhisperSize) ?? 'base';
+    const lang = whisperLang?.value || undefined;
+
+    setStage('transcribing');
+    setTransProgress(null, 'Preparando Whisper…', 'Detectando WebGPU/WASM…', 'Cargando');
+
+    const abort = new AbortController();
+    ctx.transcribeAbort = abort;
+
+    try {
+      const { transcribeBlob } = await import('./transcribe');
+      const result = await transcribeBlob({
+        blob: ctx.mp3Blob,
+        model: size,
+        language: lang,
+        signal: abort.signal,
+        onProgress: (p) => {
+          if (p.phase === 'loading-model') {
+            const pct = typeof p.progress === 'number' ? p.progress : null;
+            setTransProgress(
+              pct,
+              'Descargando modelo…',
+              p.file
+                ? `${p.file}${
+                    pct !== null ? ` · ${Math.floor(pct)}%` : ''
+                  }`
+                : 'Primera vez — después irá instantáneo',
+              'Cacheando en IndexedDB',
+            );
+          } else if (p.phase === 'decoding') {
+            setTransProgress(null, 'Decodificando audio…', 'Preparando PCM 16 kHz mono', 'Procesando');
+          } else if (p.phase === 'running') {
+            setTransProgress(null, 'Transcribiendo…', 'Whisper procesando en tu dispositivo', 'En curso');
+          }
+        },
+      });
+
+      if (transcriptText) transcriptText.value = result.text.trim();
+      if (transMeta) {
+        const dur = ctx.meta?.durationSec
+          ? formatDuration(ctx.meta.durationSec)
+          : '—';
+        const modelLabel = `whisper-${size}`;
+        const langLabel = lang ?? 'auto';
+        transMeta.textContent = `${modelLabel} · ${langLabel} · duración ${dur}`;
+      }
+      ctx.transcribeAbort = null;
+      setStage('transcript');
+    } catch (e) {
+      ctx.transcribeAbort = null;
+      if ((e as Error).name === 'AbortError') {
+        setStage('done');
+        return;
+      }
+      console.error(e);
+      showError(
+        e instanceof Error
+          ? `Transcripción falló: ${e.message}`
+          : 'Transcripción falló.',
+      );
+    }
+  }
+
+  function cancelTranscribe() {
+    if (ctx.transcribeAbort) {
+      ctx.transcribeAbort.abort();
+      ctx.transcribeAbort = null;
+    }
+    setStage('done');
+  }
+
+  async function copyTranscript() {
+    if (!transcriptText) return;
+    try {
+      await navigator.clipboard.writeText(transcriptText.value);
+      const btn = btnCopyText;
+      if (btn) {
+        const prev = btn.innerHTML;
+        btn.innerHTML =
+          '<svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span class="hidden sm:inline">Copiado</span>';
+        setTimeout(() => {
+          btn.innerHTML = prev;
+        }, 1500);
+      }
+    } catch {
+      transcriptText.select();
+      document.execCommand('copy');
+    }
+  }
+
+  function downloadTranscript() {
+    if (!transcriptText) return;
+    const raw = outputName?.value.trim() || ctx.meta?.name || 'transcripcion';
+    const name = sanitizeName(raw) || 'transcripcion';
+    const blob = new Blob([transcriptText.value], {
+      type: 'text/plain;charset=utf-8',
+    });
+    downloadFromBlob(blob, `${name}.txt`);
   }
 
   // --- Dropzone events ---
@@ -326,6 +521,11 @@ export function initConverter(): void {
 
   btnConvert?.addEventListener('click', startConversion);
   btnDownload?.addEventListener('click', download);
+  btnTranscribe?.addEventListener('click', startTranscribe);
+  btnTransCancel?.addEventListener('click', cancelTranscribe);
+  btnBackDone?.addEventListener('click', () => setStage('done'));
+  btnCopyText?.addEventListener('click', copyTranscript);
+  btnDownloadTxt?.addEventListener('click', downloadTranscript);
 
   const onCancel = async () => {
     if (ctx.jobId) await cancelRemoteJob(ctx.jobId);
@@ -333,10 +533,11 @@ export function initConverter(): void {
   };
   btnCancel?.addEventListener('click', onCancel);
   btnCancel2?.addEventListener('click', onCancel);
-  btnAgain?.addEventListener('click', onCancel);
+  btnAgain?.addEventListener('click', resetAll);
+  btnAgain2?.addEventListener('click', resetAll);
   btnRetry?.addEventListener('click', onCancel);
 
-  // Protección: evitar que el navegador abra el archivo si el usuario suelta fuera del dropzone
+  // Evita que el navegador abra archivo al soltar fuera del dropzone
   window.addEventListener('dragover', (e) => e.preventDefault());
   window.addEventListener('drop', (e) => e.preventDefault());
 }

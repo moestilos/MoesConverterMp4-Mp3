@@ -6,7 +6,7 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
 
 <section
   id="converter"
-  class="glass rounded-3xl p-6 sm:p-10 shadow-card"
+  class="glass rounded-3xl p-5 sm:p-8 lg:p-10 shadow-card"
   data-api-url={apiUrl}
   data-max-mb={maxMb}
   data-max-label={maxLabel}
@@ -30,22 +30,22 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
 
       <div class="relative flex flex-col items-center text-center">
         <div
-          class="w-20 h-20 rounded-2xl grid place-items-center mb-6
+          class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl grid place-items-center mb-5 sm:mb-6
                  bg-gradient-to-br from-brand-500/30 to-accent-500/30
                  border border-white/10 animate-float-med shadow-glow"
         >
-          <svg class="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="w-8 h-8 sm:w-9 sm:h-9 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3v12" />
             <path d="m7 8 5-5 5 5" />
             <path d="M5 21h14" />
           </svg>
         </div>
 
-        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-2">
+        <h3 class="text-lg sm:text-xl md:text-2xl font-semibold text-white mb-2">
           Arrastra tu video aquí
         </h3>
-        <p class="text-slate-400 mb-5 max-w-md">
-          o haz clic para seleccionar. MP4, MOV, WebM, AVI…
+        <p class="text-slate-400 mb-5 max-w-md text-sm sm:text-base">
+          o toca para seleccionar. MP4, MOV, WebM, AVI…
           <span class="text-slate-500">hasta {maxLabel}.</span>
         </p>
         <span class="btn-ghost text-sm pointer-events-none">
@@ -58,7 +58,7 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
         </span>
       </div>
 
-      <input id="file-input" type="file" accept="video/*" class="hidden" />
+      <input id="file-input" type="file" accept="video/*,audio/*" class="hidden" />
     </label>
 
     <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
@@ -67,26 +67,26 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
         </span>
         <div>
-          <p class="text-white font-medium">Rápido</p>
+          <p class="text-white font-medium">MP4 → MP3</p>
           <p class="text-slate-400 text-xs">FFmpeg nativo</p>
         </div>
       </div>
       <div class="glass rounded-xl p-4 flex items-center gap-3">
         <span class="w-8 h-8 rounded-lg bg-accent-500/20 text-accent-400 grid place-items-center">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
         </span>
         <div>
-          <p class="text-white font-medium">Privado</p>
-          <p class="text-slate-400 text-xs">Archivos se auto-eliminan</p>
+          <p class="text-white font-medium">Audio → Texto</p>
+          <p class="text-slate-400 text-xs">Whisper en tu navegador</p>
         </div>
       </div>
       <div class="glass rounded-xl p-4 flex items-center gap-3">
         <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-300 grid place-items-center">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </span>
         <div>
-          <p class="text-white font-medium">Sin registro</p>
-          <p class="text-slate-400 text-xs">Sube y descarga</p>
+          <p class="text-white font-medium">100% privado</p>
+          <p class="text-slate-400 text-xs">Sin registro, auto-borrado</p>
         </div>
       </div>
     </div>
@@ -94,14 +94,14 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
 
   <!-- Stage: FILE READY -->
   <div data-stage="ready" class="hidden">
-    <div class="flex items-start gap-4">
-      <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-brand-500/30 to-accent-500/30 border border-white/10 grid place-items-center shrink-0">
-        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 10 5 5V5l-5 5z"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
+    <div class="flex items-start gap-3 sm:gap-4">
+      <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-brand-500/30 to-accent-500/30 border border-white/10 grid place-items-center shrink-0">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m15 10 5 5V5l-5 5z"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-xs uppercase tracking-wider text-slate-400">Archivo seleccionado</p>
-        <p id="file-name" class="text-lg font-semibold text-white truncate"></p>
-        <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400 mt-1">
+        <p id="file-name" class="text-base sm:text-lg font-semibold text-white truncate"></p>
+        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm text-slate-400 mt-1">
           <span id="file-size"></span>
           <span id="file-duration"></span>
         </div>
@@ -111,7 +111,7 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
       </button>
     </div>
 
-    <div class="mt-6">
+    <div class="mt-5 sm:mt-6">
       <label for="output-name" class="block text-sm text-slate-300 mb-2">
         Nombre de salida
       </label>
@@ -119,15 +119,15 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
         <input
           id="output-name"
           type="text"
-          class="flex-1 bg-transparent px-4 py-3 text-white outline-none"
+          class="flex-1 bg-transparent px-4 py-3 text-white outline-none min-w-0"
           placeholder="mi-audio"
           autocomplete="off"
         />
-        <span class="px-4 py-3 text-slate-500 text-sm select-none border-l border-white/10">.mp3</span>
+        <span class="px-3 sm:px-4 py-3 text-slate-500 text-sm select-none border-l border-white/10">.mp3</span>
       </div>
     </div>
 
-    <div id="upload-status" class="mt-6 hidden">
+    <div id="upload-status" class="mt-5 sm:mt-6 hidden">
       <div class="flex items-center justify-between text-sm mb-2">
         <span id="upload-label" class="text-slate-300">Subiendo archivo…</span>
         <span id="upload-percent" class="font-mono text-slate-200 tabular-nums">0%</span>
@@ -138,7 +138,7 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
       <p id="upload-sub" class="mt-2 text-xs text-slate-500"></p>
     </div>
 
-    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+    <div class="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3">
       <button id="btn-convert" type="button" class="btn-primary flex-1" disabled>
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9z"/></svg>
         <span id="btn-convert-label">Subiendo…</span>
@@ -149,40 +149,40 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
     </div>
   </div>
 
-  <!-- Stage: PROGRESS -->
+  <!-- Stage: PROGRESS (conversion) -->
   <div data-stage="progress" class="hidden">
-    <div class="flex items-center gap-4 mb-8">
-      <div class="relative w-14 h-14 shrink-0">
+    <div class="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div class="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
         <div class="absolute inset-0 rounded-full bg-accent-500/20 animate-pulse-glow"></div>
         <div class="absolute inset-0 rounded-full border-2 border-accent-400/60 border-t-transparent animate-spin"></div>
       </div>
       <div class="min-w-0 flex-1">
-        <p id="progress-label" class="text-white font-semibold">Subiendo archivo…</p>
-        <p id="progress-sub" class="text-slate-400 text-sm truncate">Preparando la conversión</p>
+        <p id="progress-label" class="text-white font-semibold text-sm sm:text-base">Convirtiendo a MP3…</p>
+        <p id="progress-sub" class="text-slate-400 text-xs sm:text-sm truncate">Iniciando FFmpeg</p>
       </div>
-      <span id="progress-percent" class="font-mono text-2xl font-semibold text-white tabular-nums">0%</span>
+      <span id="progress-percent" class="font-mono text-xl sm:text-2xl font-semibold text-white tabular-nums">0%</span>
     </div>
 
     <div class="progress-track">
       <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
     </div>
 
-    <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
-      <span id="progress-stage">Fase 1 de 2 · Subida</span>
-      <span>FFmpeg · libmp3lame · 192 kbps</span>
+    <div class="mt-4 flex items-center justify-between text-xs text-slate-500 gap-3">
+      <span id="progress-stage" class="truncate">Conversión en curso</span>
+      <span class="shrink-0 hidden sm:inline">FFmpeg · libmp3lame · 192 kbps</span>
     </div>
   </div>
 
   <!-- Stage: DONE -->
   <div data-stage="done" class="hidden">
-    <div class="flex flex-col items-center text-center py-6">
-      <div class="w-20 h-20 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 grid place-items-center mb-5 shadow-[0_0_40px_-8px_rgba(16,185,129,0.55)]">
-        <svg class="w-9 h-9 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="flex flex-col items-center text-center py-4 sm:py-6">
+      <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 grid place-items-center mb-4 sm:mb-5 shadow-[0_0_40px_-8px_rgba(16,185,129,0.55)]">
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </div>
-      <h3 class="text-2xl font-bold text-white mb-2">¡Listo!</h3>
-      <p class="text-slate-400 mb-6">Tu MP3 está preparado para descargar.</p>
+      <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">¡Listo!</h3>
+      <p id="done-sub" class="text-slate-400 mb-5 sm:mb-6 text-sm sm:text-base">Tu MP3 está preparado.</p>
       <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <button id="btn-download" type="button" class="btn-primary">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -193,18 +193,131 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
         </button>
       </div>
     </div>
+
+    <!-- Transcription section -->
+    <div class="mt-8 pt-6 border-t border-white/10">
+      <div class="flex items-start gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-accent-500/20 border border-accent-400/20 grid place-items-center shrink-0">
+          <svg class="w-5 h-5 text-accent-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h4 class="text-white font-semibold">Transcribir a texto</h4>
+          <p class="text-slate-400 text-xs sm:text-sm">
+            Whisper se ejecuta <strong class="text-slate-200">en tu dispositivo</strong>.
+            El audio no sale de aquí. Primera vez descarga el modelo (una sola vez).
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+        <div>
+          <label for="whisper-model" class="block text-xs text-slate-400 mb-1">Modelo</label>
+          <select
+            id="whisper-model"
+            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-accent-400/60"
+          >
+            <option value="tiny">Tiny (~40 MB, rápido, calidad básica)</option>
+            <option value="base" selected>Base (~75 MB, recomendado)</option>
+            <option value="small">Small (~250 MB, mejor calidad, lento)</option>
+          </select>
+        </div>
+        <div>
+          <label for="whisper-lang" class="block text-xs text-slate-400 mb-1">Idioma</label>
+          <select
+            id="whisper-lang"
+            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-accent-400/60"
+          >
+            <option value="">Auto-detectar</option>
+            <option value="spanish" selected>Español</option>
+            <option value="english">Inglés</option>
+            <option value="french">Francés</option>
+            <option value="german">Alemán</option>
+            <option value="italian">Italiano</option>
+            <option value="portuguese">Portugués</option>
+            <option value="catalan">Catalán</option>
+            <option value="japanese">Japonés</option>
+            <option value="chinese">Chino</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-transcribe" type="button" class="btn-primary w-full">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        Transcribir audio
+      </button>
+    </div>
+  </div>
+
+  <!-- Stage: TRANSCRIBING -->
+  <div data-stage="transcribing" class="hidden">
+    <div class="flex items-center gap-3 sm:gap-4 mb-6">
+      <div class="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
+        <div class="absolute inset-0 rounded-full bg-accent-500/20 animate-pulse-glow"></div>
+        <div class="absolute inset-0 rounded-full border-2 border-accent-400/60 border-t-transparent animate-spin"></div>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p id="trans-label" class="text-white font-semibold text-sm sm:text-base">Descargando modelo…</p>
+        <p id="trans-sub" class="text-slate-400 text-xs sm:text-sm truncate">Una sola vez — se cachea en tu navegador</p>
+      </div>
+      <span id="trans-percent" class="font-mono text-lg sm:text-2xl font-semibold text-white tabular-nums">—</span>
+    </div>
+
+    <div class="progress-track">
+      <div id="trans-bar" class="progress-bar" style="width: 0%"></div>
+    </div>
+
+    <div class="mt-4 flex items-center justify-between text-xs text-slate-500 gap-3">
+      <span id="trans-stage" class="truncate">Preparando Whisper…</span>
+      <button id="btn-trans-cancel" type="button" class="text-rose-300 hover:text-rose-200 shrink-0">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Stage: TRANSCRIPT -->
+  <div data-stage="transcript" class="hidden">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 grid place-items-center shrink-0">
+        <svg class="w-5 h-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h4 class="text-white font-semibold text-base sm:text-lg">Transcripción lista</h4>
+        <p class="text-slate-400 text-xs sm:text-sm" id="trans-meta">—</p>
+      </div>
+    </div>
+
+    <textarea
+      id="transcript-text"
+      class="w-full h-56 sm:h-72 bg-white/[0.03] border border-white/10 rounded-xl p-4 text-slate-100 text-sm leading-relaxed outline-none focus:border-accent-400/60 resize-y"
+      readonly
+    ></textarea>
+
+    <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+      <button id="btn-copy-text" type="button" class="btn-ghost">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span class="hidden sm:inline">Copiar</span>
+      </button>
+      <button id="btn-download-txt" type="button" class="btn-ghost">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span class="hidden sm:inline">.txt</span>
+      </button>
+      <button id="btn-back-done" type="button" class="btn-ghost">
+        ← MP3
+      </button>
+      <button id="btn-again-2" type="button" class="btn-primary">
+        Nuevo
+      </button>
+    </div>
   </div>
 
   <!-- Stage: ERROR -->
   <div data-stage="error" class="hidden">
     <div class="flex flex-col items-center text-center py-6">
-      <div class="w-20 h-20 rounded-2xl bg-rose-500/20 border border-rose-400/30 grid place-items-center mb-5">
-        <svg class="w-9 h-9 text-rose-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-rose-500/20 border border-rose-400/30 grid place-items-center mb-5">
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 text-rose-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
-      <h3 class="text-2xl font-bold text-white mb-2">Algo salió mal</h3>
-      <p id="error-msg" class="text-rose-200/80 mb-6 max-w-md">Error desconocido.</p>
+      <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">Algo salió mal</h3>
+      <p id="error-msg" class="text-rose-200/80 mb-6 max-w-md text-sm sm:text-base px-2">Error desconocido.</p>
       <button id="btn-retry" type="button" class="btn-primary">
         Intentar de nuevo
       </button>
