@@ -88,6 +88,43 @@ meRouter.get('/activity', async (req: Request, res: Response) => {
   res.json({ activity: rows.rows });
 });
 
+meRouter.get('/timeseries', async (req: Request, res: Response) => {
+  const userId = req.user!.sub;
+  const metric = String(req.query.metric ?? 'conversions');
+  const days = Math.min(Math.max(Number(req.query.days ?? 14), 1), 90);
+
+  const tableMap: Record<string, string> = {
+    conversions: 'conversions',
+    downloads: 'downloads',
+    transcriptions: 'transcriptions',
+  };
+  const tableName = tableMap[metric];
+  if (!tableName) {
+    return res.status(400).json({ error: 'metric inválido' });
+  }
+
+  const rows = await db.execute(sql`
+    WITH days AS (
+      SELECT generate_series(
+        date_trunc('day', NOW()) - ((${days} - 1) || ' days')::interval,
+        date_trunc('day', NOW()),
+        '1 day'::interval
+      ) AS day
+    )
+    SELECT
+      to_char(d.day, 'YYYY-MM-DD') AS day,
+      COALESCE(COUNT(t.id), 0)::int AS count
+    FROM days d
+    LEFT JOIN ${sql.raw(tableName)} t
+      ON date_trunc('day', t.created_at) = d.day
+      AND t.user_id = ${userId}
+    GROUP BY d.day
+    ORDER BY d.day ASC
+  `);
+
+  res.json({ metric, days, series: rows.rows });
+});
+
 meRouter.post('/password', async (req: Request, res: Response) => {
   const userId = req.user!.sub;
   const { currentPassword, newPassword } = (req.body ?? {}) as Record<

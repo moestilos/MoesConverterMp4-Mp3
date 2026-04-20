@@ -6,157 +6,238 @@ import Footer from '../components/Footer.astro';
 
 <Layout title="Tu perfil · MoesConverter">
   <AuthNav />
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-16">
-    <!-- Hero card -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-16">
+    <!-- Hero -->
     <section class="relative overflow-hidden rounded-3xl p-5 sm:p-8 mb-6
-                    bg-gradient-to-br from-brand-500/15 via-accent-500/10 to-fuchsia-500/10
+                    bg-gradient-to-br from-brand-500/10 via-accent-500/8 to-fuchsia-500/10
                     border border-white/10
-                    shadow-[0_30px_80px_-30px_rgba(139,92,246,0.45)]">
-      <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-accent-500/25 blur-3xl"></div>
-      <div class="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-brand-500/25 blur-3xl"></div>
+                    shadow-[0_40px_100px_-40px_rgba(139,92,246,0.5)]">
+      <!-- Decorative glows -->
+      <div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-accent-500/20 blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-brand-500/20 blur-3xl pointer-events-none"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(167,139,250,0.08),transparent_60%)] pointer-events-none"></div>
 
-      <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
-        <!-- Avatar -->
-        <div class="relative shrink-0">
-          <div id="profile-avatar"
-               class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl
-                      bg-gradient-to-br from-brand-400 via-accent-500 to-fuchsia-500
-                      grid place-items-center
-                      text-white text-3xl sm:text-4xl font-extrabold
-                      shadow-[0_20px_50px_-15px_rgba(139,92,246,0.7)]
-                      ring-2 ring-white/10">
-            —
+      <div class="relative flex flex-col lg:flex-row items-start gap-6">
+        <!-- Avatar + identity -->
+        <div class="flex items-center gap-4 sm:gap-5 w-full lg:w-auto">
+          <div class="relative shrink-0">
+            <div class="absolute -inset-1 rounded-[22px] bg-gradient-to-br from-brand-400 via-accent-500 to-fuchsia-500 opacity-50 blur-md"></div>
+            <div id="profile-avatar"
+                 class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl
+                        bg-gradient-to-br from-brand-400 via-accent-500 to-fuchsia-500
+                        grid place-items-center
+                        text-white text-3xl sm:text-4xl font-black
+                        ring-2 ring-white/15
+                        shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
+              —
+            </div>
           </div>
-          <span id="profile-role-badge"
-                class="hidden absolute -bottom-1.5 -right-1.5
-                       px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-                       bg-accent-500 text-white
-                       shadow-lg ring-2 ring-[#0a0a12]">Admin</span>
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full
+                           text-[10px] font-semibold uppercase tracking-wider
+                           bg-white/5 border border-white/10 text-slate-400">
+                <span class="w-1 h-1 rounded-full bg-emerald-400"></span>
+                Activo
+              </span>
+              <span id="profile-role-badge"
+                    class="hidden items-center px-2 py-0.5 rounded-full
+                           text-[10px] font-bold uppercase tracking-wider
+                           bg-gradient-to-r from-accent-500 to-fuchsia-500
+                           text-white shadow-[0_0_12px_-2px_rgba(217,70,239,0.7)]">Admin</span>
+            </div>
+            <h1 id="profile-username" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white truncate tracking-tight">
+              @—
+            </h1>
+            <p id="profile-email" class="text-slate-300 text-sm truncate mt-0.5">—</p>
+            <p id="profile-joined" class="text-slate-500 text-xs mt-1.5 flex items-center gap-1.5">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span>—</span>
+            </p>
+          </div>
         </div>
 
-        <!-- Info -->
-        <div class="min-w-0 flex-1">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">Tu perfil</p>
-          <h1 id="profile-username" class="text-2xl sm:text-3xl font-extrabold text-white truncate">
-            @—
-          </h1>
-          <p id="profile-email" class="text-slate-300 text-sm truncate">—</p>
-          <p id="profile-joined" class="text-slate-500 text-xs mt-1">—</p>
+        <!-- Inline mini stats (mobile: grid, desktop: row right) -->
+        <div class="flex-1 w-full grid grid-cols-3 gap-2 sm:gap-3 lg:max-w-md lg:ml-auto">
+          <div class="rounded-xl bg-white/[0.04] border border-white/10 px-3 py-2.5">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">Conv.</p>
+            <p id="hero-conversions" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+          </div>
+          <div class="rounded-xl bg-white/[0.04] border border-white/10 px-3 py-2.5">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">Desc.</p>
+            <p id="hero-downloads" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+          </div>
+          <div class="rounded-xl bg-white/[0.04] border border-white/10 px-3 py-2.5">
+            <p class="text-[10px] uppercase tracking-wider text-slate-500 mb-0.5">Trans.</p>
+            <p id="hero-transcriptions" class="text-xl sm:text-2xl font-bold text-white tabular-nums">—</p>
+          </div>
         </div>
+      </div>
 
-        <!-- CTA -->
-        <div class="flex items-center gap-2 shrink-0">
-          <a href="/" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg
-                    text-xs sm:text-sm font-medium
-                    text-slate-300 hover:text-white
-                    bg-white/5 hover:bg-white/10
-                    border border-white/10 transition-colors">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="19 12 5 12"/><polyline points="12 19 5 12 12 5"/></svg>
-            <span>Volver</span>
-          </a>
-        </div>
+      <!-- Quick actions row -->
+      <div class="relative mt-6 flex flex-wrap gap-2">
+        <a href="/" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9z"/></svg>
+          Convertir o transcribir
+        </a>
+        <a id="qa-admin" href="/admin" class="hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-accent-300 hover:text-white bg-accent-500/10 hover:bg-accent-500/20 border border-accent-400/20 transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+          Panel admin
+        </a>
+        <button id="qa-logout" type="button" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-rose-200 bg-white/5 hover:bg-rose-500/15 border border-white/10 hover:border-rose-400/30 transition-colors ml-auto">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Cerrar sesión
+        </button>
       </div>
     </section>
 
-    <!-- Stats grid -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-300 grid place-items-center">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
-          </span>
-          <p class="text-[11px] uppercase tracking-wider text-slate-400">Conversiones</p>
+    <!-- Stats with sparklines -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div class="glass rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-brand-500/20 text-brand-300 grid place-items-center">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>
+            </span>
+            <p class="text-[11px] uppercase tracking-wider text-slate-400">Conversiones</p>
+          </div>
+          <span id="delta-conversions" class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">—</span>
         </div>
-        <p id="stat-conversions" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+        <p id="stat-conversions" class="text-3xl font-extrabold text-white tabular-nums mb-2">—</p>
+        <div class="h-10"><canvas id="spark-conversions"></canvas></div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 grid place-items-center">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </span>
-          <p class="text-[11px] uppercase tracking-wider text-slate-400">Descargas</p>
+
+      <div class="glass rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-300 grid place-items-center">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </span>
+            <p class="text-[11px] uppercase tracking-wider text-slate-400">Descargas</p>
+          </div>
+          <span id="delta-downloads" class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">—</span>
         </div>
-        <p id="stat-downloads" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+        <p id="stat-downloads" class="text-3xl font-extrabold text-white tabular-nums mb-2">—</p>
+        <div class="h-10"><canvas id="spark-downloads"></canvas></div>
       </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="w-7 h-7 rounded-lg bg-fuchsia-500/20 text-fuchsia-300 grid place-items-center">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-          </span>
-          <p class="text-[11px] uppercase tracking-wider text-slate-400">Transcripciones</p>
+
+      <div class="glass rounded-2xl p-4 sm:p-5 relative overflow-hidden">
+        <div class="flex items-center justify-between mb-1">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-fuchsia-500/20 text-fuchsia-300 grid place-items-center">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            </span>
+            <p class="text-[11px] uppercase tracking-wider text-slate-400">Transcripciones</p>
+          </div>
+          <span id="delta-transcriptions" class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-400">—</span>
         </div>
-        <p id="stat-transcriptions" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
-      </div>
-      <div class="glass rounded-2xl p-4">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 grid place-items-center">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </span>
-          <p class="text-[11px] uppercase tracking-wider text-slate-400">Audio procesado</p>
-        </div>
-        <p id="stat-seconds" class="text-2xl sm:text-3xl font-bold text-white tabular-nums">—</p>
+        <p id="stat-transcriptions" class="text-3xl font-extrabold text-white tabular-nums mb-2">—</p>
+        <div class="h-10"><canvas id="spark-transcriptions"></canvas></div>
       </div>
     </section>
 
-    <!-- Byte usage -->
+    <!-- Compression + summary row -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div class="glass rounded-2xl p-4 sm:p-6 lg:col-span-2">
+        <div class="flex items-start justify-between mb-5 gap-4">
+          <div>
+            <h3 class="text-white font-semibold">Compresión acumulada</h3>
+            <p class="text-slate-500 text-xs mt-0.5">Bytes de entrada vs salida en tus conversiones</p>
+          </div>
+          <span id="stat-ratio" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-accent-500/15 text-accent-300 border border-accent-400/30 tabular-nums">—</span>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-6">
+          <div class="relative w-32 h-32 shrink-0">
+            <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12"/>
+              <circle id="donut-out" cx="60" cy="60" r="52" fill="none" stroke="url(#grad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 1000" />
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#6087ff"/>
+                  <stop offset="100%" stop-color="#e879f9"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="absolute inset-0 grid place-items-center flex-col">
+              <p id="donut-pct" class="text-2xl font-extrabold text-white tabular-nums">—</p>
+              <p class="text-[10px] text-slate-500 uppercase tracking-wider">compresión</p>
+            </div>
+          </div>
+          <div class="flex-1 w-full space-y-3">
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-slate-400 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                  Entrada (video)
+                </span>
+                <span id="stat-bytes-in" class="text-slate-200 font-mono tabular-nums">—</span>
+              </div>
+              <div class="progress-track h-1.5"><div id="bar-in" class="h-full rounded-full bg-slate-500 transition-[width] duration-500" style="width:0%"></div></div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="text-slate-400 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-gradient-to-r from-brand-400 to-accent-400"></span>
+                  Salida (MP3)
+                </span>
+                <span id="stat-bytes-out" class="text-slate-200 font-mono tabular-nums">—</span>
+              </div>
+              <div class="progress-track h-1.5"><div id="bar-out" class="progress-bar h-full" style="width:0%"></div></div>
+            </div>
+            <div class="pt-2 border-t border-white/5 grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <p class="text-slate-500 uppercase tracking-wider text-[10px]">Audio procesado</p>
+                <p id="stat-seconds" class="text-white font-semibold mt-0.5">—</p>
+              </div>
+              <div>
+                <p class="text-slate-500 uppercase tracking-wider text-[10px]">Texto transcrito</p>
+                <p id="stat-chars" class="text-white font-semibold mt-0.5">—</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change password compact -->
+      <div class="glass rounded-2xl p-4 sm:p-6">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-300 grid place-items-center">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </span>
+          <h3 class="text-white font-semibold">Seguridad</h3>
+        </div>
+        <form id="pw-form" class="space-y-3">
+          <div>
+            <label for="current-pw" class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1">Contraseña actual</label>
+            <input id="current-pw" name="currentPassword" type="password" required autocomplete="current-password"
+              class="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-accent-400/60" />
+          </div>
+          <div>
+            <label for="new-pw" class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1">Nueva contraseña</label>
+            <input id="new-pw" name="newPassword" type="password" required minlength="6" autocomplete="new-password"
+              class="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-accent-400/60" />
+            <p class="text-[10px] text-slate-500 mt-1">Mínimo 6 caracteres</p>
+          </div>
+          <p id="pw-error" class="text-rose-300 text-xs hidden"></p>
+          <p id="pw-success" class="text-emerald-300 text-xs hidden">✓ Contraseña actualizada</p>
+          <button type="submit" class="btn-primary w-full text-sm py-2">Actualizar</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Activity timeline -->
     <section class="glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
-      <div class="flex items-start justify-between mb-4 gap-4">
-        <div>
-          <h3 class="text-white font-semibold">Compresión acumulada</h3>
-          <p class="text-slate-500 text-xs mt-0.5">Total bytes entrada → salida en tus conversiones</p>
-        </div>
-        <span id="stat-ratio"
-              class="px-2.5 py-1 rounded-lg text-xs font-bold
-                     bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 tabular-nums">—</span>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <div class="flex items-center justify-between text-xs mb-1">
-            <span class="text-slate-400">Entrada (video)</span>
-            <span id="stat-bytes-in" class="text-slate-200 font-mono tabular-nums">—</span>
-          </div>
-          <div class="progress-track"><div id="bar-in" class="progress-bar" style="width:0%"></div></div>
-        </div>
-        <div>
-          <div class="flex items-center justify-between text-xs mb-1">
-            <span class="text-slate-400">Salida (MP3)</span>
-            <span id="stat-bytes-out" class="text-slate-200 font-mono tabular-nums">—</span>
-          </div>
-          <div class="progress-track"><div id="bar-out" class="progress-bar" style="width:0%"></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Activity -->
-    <section class="glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-5">
         <div>
           <h3 class="text-white font-semibold">Actividad reciente</h3>
-          <p class="text-slate-500 text-xs mt-0.5">Últimas 20 acciones</p>
+          <p class="text-slate-500 text-xs mt-0.5">Últimas 20 acciones agrupadas por día</p>
         </div>
+        <span class="w-8 h-8 rounded-lg bg-indigo-500/15 text-indigo-300 grid place-items-center">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
       </div>
-      <div id="activity-list" class="space-y-2"></div>
-    </section>
-
-    <!-- Change password -->
-    <section class="glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
-      <h3 class="text-white font-semibold mb-1">Cambiar contraseña</h3>
-      <p class="text-slate-500 text-xs mb-4">Mínimo 6 caracteres.</p>
-      <form id="pw-form" class="space-y-3 max-w-md">
-        <div>
-          <label for="current-pw" class="block text-xs text-slate-400 mb-1">Contraseña actual</label>
-          <input id="current-pw" name="currentPassword" type="password" required autocomplete="current-password"
-            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-accent-400/60 text-sm" />
-        </div>
-        <div>
-          <label for="new-pw" class="block text-xs text-slate-400 mb-1">Nueva contraseña</label>
-          <input id="new-pw" name="newPassword" type="password" required minlength="6" autocomplete="new-password"
-            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-2.5 text-white outline-none focus:border-accent-400/60 text-sm" />
-        </div>
-        <p id="pw-error" class="text-rose-300 text-sm hidden"></p>
-        <p id="pw-success" class="text-emerald-300 text-sm hidden">Contraseña actualizada.</p>
-        <button type="submit" class="btn-primary">Actualizar contraseña</button>
-      </form>
+      <div id="activity-list" class="space-y-6"></div>
     </section>
   </main>
 
@@ -164,7 +245,30 @@ import Footer from '../components/Footer.astro';
 </Layout>
 
 <script>
-  import { apiFetch, requireAuth } from '../scripts/auth';
+  import { apiFetch, clearAuth, requireAuth } from '../scripts/auth';
+  import {
+    Chart,
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Filler,
+    Tooltip,
+  } from 'chart.js';
+
+  Chart.register(
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    CategoryScale,
+    Filler,
+    Tooltip,
+  );
+
+  Chart.defaults.font.family =
+    'Inter, system-ui, -apple-system, Segoe UI, sans-serif';
 
   const user = requireAuth('/login?next=/profile');
   if (user) init();
@@ -173,14 +277,14 @@ import Footer from '../components/Footer.astro';
     return new Intl.NumberFormat('es-ES').format(n);
   }
   function fmtBytes(b: number): string {
-    if (!b) return '0 B';
+    if (!b) return '—';
     const k = 1024;
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.min(units.length - 1, Math.floor(Math.log(b) / Math.log(k)));
     return `${(b / Math.pow(k, i)).toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
   }
   function fmtDuration(s: number): string {
-    if (!s) return '0s';
+    if (!s) return '—';
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
     const sec = s % 60;
@@ -209,12 +313,21 @@ import Footer from '../components/Footer.astro';
 
   async function init() {
     try {
-      const [profile, activity] = await Promise.all([
+      const [profile, activity, sConv, sDls, sTrans] = await Promise.all([
         apiFetch('/me/profile').then((r) => r.json()),
         apiFetch('/me/activity?limit=20').then((r) => r.json()),
+        apiFetch('/me/timeseries?metric=conversions&days=14').then((r) => r.json()),
+        apiFetch('/me/timeseries?metric=downloads&days=14').then((r) => r.json()),
+        apiFetch('/me/timeseries?metric=transcriptions&days=14').then((r) => r.json()),
       ]);
       renderProfile(profile);
       renderActivity(activity.activity ?? []);
+      drawSpark('spark-conversions', sConv.series ?? [], '#6087ff');
+      drawSpark('spark-downloads', sDls.series ?? [], '#38bdf8');
+      drawSpark('spark-transcriptions', sTrans.series ?? [], '#e879f9');
+      renderDelta('delta-conversions', sConv.series ?? []);
+      renderDelta('delta-downloads', sDls.series ?? []);
+      renderDelta('delta-transcriptions', sTrans.series ?? []);
     } catch (e) {
       console.error(e);
     }
@@ -222,6 +335,16 @@ import Footer from '../components/Footer.astro';
     document
       .getElementById('pw-form')
       ?.addEventListener('submit', changePassword);
+
+    document.getElementById('qa-logout')?.addEventListener('click', () => {
+      clearAuth();
+      window.location.href = '/login';
+    });
+  }
+
+  function setText(id: string, v: string) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = v;
   }
 
   function renderProfile(data: any) {
@@ -232,120 +355,245 @@ import Footer from '../components/Footer.astro';
     setText('profile-username', `@${u.username}`);
     setText('profile-email', u.email);
     const joined = new Date(u.createdAt);
-    setText(
-      'profile-joined',
-      `Miembro desde ${joined.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}`,
-    );
-    if (u.role === 'admin') {
-      document.getElementById('profile-role-badge')?.classList.remove('hidden');
+    const joinedEl = document.querySelector('#profile-joined span');
+    if (joinedEl) {
+      joinedEl.textContent = `Miembro desde ${joined.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}`;
     }
+    if (u.role === 'admin') {
+      const badge = document.getElementById('profile-role-badge');
+      badge?.classList.remove('hidden');
+      badge?.classList.add('inline-flex');
+      document.getElementById('qa-admin')?.classList.remove('hidden');
+    }
+
+    setText('hero-conversions', fmt(s.conversions));
+    setText('hero-downloads', fmt(s.downloads));
+    setText('hero-transcriptions', fmt(s.transcriptions));
     setText('stat-conversions', fmt(s.conversions));
     setText('stat-downloads', fmt(s.downloads));
     setText('stat-transcriptions', fmt(s.transcriptions));
+    setText('stat-bytes-in', s.bytesIn ? fmtBytes(s.bytesIn) : '—');
+    setText('stat-bytes-out', s.bytesOut ? fmtBytes(s.bytesOut) : '—');
     setText('stat-seconds', fmtDuration(s.secondsAudio));
-    setText('stat-bytes-in', fmtBytes(s.bytesIn));
-    setText('stat-bytes-out', fmtBytes(s.bytesOut));
+    setText(
+      'stat-chars',
+      s.charsTranscribed ? `${fmt(s.charsTranscribed)} chars` : '—',
+    );
 
-    const total = s.bytesIn || 1;
-    const inPct = 100;
-    const outPct = Math.min(100, (s.bytesOut / total) * 100);
-    (document.getElementById('bar-in') as HTMLElement).style.width = `${inPct}%`;
-    (document.getElementById('bar-out') as HTMLElement).style.width = `${outPct}%`;
-
-    if (s.bytesIn > 0 && s.bytesOut > 0) {
-      const ratio = s.bytesIn / s.bytesOut;
-      setText('stat-ratio', `${ratio.toFixed(1)}x menos`);
+    if (s.bytesIn > 0) {
+      const outPct = Math.min(100, (s.bytesOut / s.bytesIn) * 100);
+      const savedPct = 100 - outPct;
+      (document.getElementById('bar-in') as HTMLElement).style.width = '100%';
+      (document.getElementById('bar-out') as HTMLElement).style.width = `${outPct}%`;
+      const donut = document.getElementById('donut-out');
+      if (donut) {
+        const circumference = 2 * Math.PI * 52; // 326.72
+        const dash = (savedPct / 100) * circumference;
+        donut.setAttribute('stroke-dasharray', `${dash} ${circumference}`);
+      }
+      setText('donut-pct', `${savedPct.toFixed(0)}%`);
+      if (s.bytesOut > 0) {
+        const ratio = s.bytesIn / s.bytesOut;
+        setText('stat-ratio', `${ratio.toFixed(1)}x más ligero`);
+      }
     } else {
-      setText('stat-ratio', '—');
+      setText('donut-pct', '—');
+      setText('stat-ratio', 'Sin datos');
     }
   }
 
-  function setText(id: string, v: string) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = v;
+  type SeriesPoint = { day: string; count: number };
+
+  function drawSpark(id: string, series: SeriesPoint[], color: string) {
+    const el = document.getElementById(id) as HTMLCanvasElement | null;
+    if (!el) return;
+    const ctx = el.getContext('2d')!;
+    const g = ctx.createLinearGradient(0, 0, 0, 40);
+    g.addColorStop(0, hexWithAlpha(color, 0.5));
+    g.addColorStop(1, hexWithAlpha(color, 0));
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: series.map((p) => p.day),
+        datasets: [
+          {
+            data: series.map((p) => p.count),
+            borderColor: color,
+            backgroundColor: g,
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0.4,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(15,17,26,0.97)',
+            borderColor: 'rgba(139,92,246,0.3)',
+            borderWidth: 1,
+            padding: 6,
+            displayColors: false,
+            callbacks: {
+              title: (items) => items[0]?.label ?? '',
+              label: (ctx) => `${ctx.parsed.y}`,
+            },
+          },
+        },
+        scales: {
+          x: { display: false },
+          y: { display: false, beginAtZero: true },
+        },
+        elements: { line: { borderJoinStyle: 'round' } },
+      },
+    });
   }
 
-  function renderActivity(
-    rows: Array<{
-      type: 'conversion' | 'download' | 'transcription';
-      created_at: string;
-      detail: Record<string, unknown>;
-    }>,
-  ) {
+  function hexWithAlpha(hex: string, a: number): string {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  function renderDelta(id: string, series: SeriesPoint[]) {
+    const el = document.getElementById(id);
+    if (!el || series.length < 14) return;
+    const last7 = series.slice(-7).reduce((a, p) => a + p.count, 0);
+    const prev7 = series.slice(-14, -7).reduce((a, p) => a + p.count, 0);
+    if (last7 === 0 && prev7 === 0) {
+      el.textContent = '—';
+      el.className =
+        'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-500';
+      return;
+    }
+    if (prev7 === 0) {
+      el.textContent = `+${last7}`;
+      el.className =
+        'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300';
+      return;
+    }
+    const pct = ((last7 - prev7) / prev7) * 100;
+    const rounded = Math.round(pct);
+    if (rounded > 0) {
+      el.textContent = `↑ ${rounded}%`;
+      el.className =
+        'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300';
+    } else if (rounded < 0) {
+      el.textContent = `↓ ${Math.abs(rounded)}%`;
+      el.className =
+        'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300';
+    } else {
+      el.textContent = '—';
+      el.className =
+        'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/5 text-slate-400';
+    }
+  }
+
+  type ActivityRow = {
+    type: 'conversion' | 'download' | 'transcription';
+    created_at: string;
+    detail: Record<string, unknown>;
+  };
+
+  function dayKey(d: Date): string {
+    return d.toISOString().slice(0, 10);
+  }
+  function dayLabel(d: Date): string {
+    const today = new Date();
+    const yesterday = new Date(Date.now() - 86400000);
+    if (dayKey(d) === dayKey(today)) return 'Hoy';
+    if (dayKey(d) === dayKey(yesterday)) return 'Ayer';
+    return d.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+    });
+  }
+
+  function renderActivity(rows: ActivityRow[]) {
     const box = document.getElementById('activity-list');
     if (!box) return;
     if (rows.length === 0) {
       box.innerHTML =
-        '<p class="text-slate-500 text-sm text-center py-8">Todavía no hay actividad. Sube un vídeo para empezar.</p>';
+        '<p class="text-slate-500 text-sm text-center py-10">Todavía no hay actividad. Sube un archivo para empezar.</p>';
       return;
     }
-    box.innerHTML = rows.map((r) => activityRow(r)).join('');
+
+    const groups = new Map<string, ActivityRow[]>();
+    for (const r of rows) {
+      const k = dayKey(new Date(r.created_at));
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k)!.push(r);
+    }
+
+    const parts: string[] = [];
+    for (const [key, items] of groups) {
+      const d = new Date(key + 'T00:00:00');
+      parts.push(`
+        <div>
+          <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-2">
+            <span class="w-1 h-1 rounded-full bg-slate-500"></span>
+            ${dayLabel(d)}
+          </p>
+          <div class="relative pl-4 border-l border-white/5 space-y-2">
+            ${items.map(activityRow).join('')}
+          </div>
+        </div>
+      `);
+    }
+    box.innerHTML = parts.join('');
   }
 
-  function activityRow(r: {
-    type: string;
-    created_at: string;
-    detail: Record<string, unknown>;
-  }): string {
+  function activityRow(r: ActivityRow): string {
     const when = new Date(r.created_at);
     const rel = relTime(when);
     const abs = when.toLocaleString('es-ES');
+
+    let color: 'brand' | 'sky' | 'fuchsia' = 'brand';
+    let icon = '';
+    let title = '';
+    let sub = '';
+
     if (r.type === 'conversion') {
       const src = Number(r.detail.sourceSize ?? 0);
       const out = Number(r.detail.outputSize ?? 0);
-      const dur = Number(r.detail.durationSec ?? 0);
-      return row(
-        'brand',
-        '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>',
-        'Conversión',
-        `${fmtBytes(src)} → ${fmtBytes(out)} · ${fmtDuration(dur)}`,
-        rel,
-        abs,
-      );
-    }
-    if (r.type === 'download') {
+      color = 'brand';
+      icon = '<path d="M13 2 3 14h7l-1 8 10-12h-7z"/>';
+      title = 'Conversión MP4 → MP3';
+      sub = `${fmtBytes(src)} → ${fmtBytes(out)}`;
+    } else if (r.type === 'download') {
       const name = (r.detail.filename as string) ?? 'archivo.mp3';
       const size = Number(r.detail.size ?? 0);
-      return row(
-        'sky',
-        '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
-        'Descarga',
-        `${escape(name)} · ${fmtBytes(size)}`,
-        rel,
-        abs,
-      );
-    }
-    if (r.type === 'transcription') {
+      color = 'sky';
+      icon =
+        '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>';
+      title = 'Descarga';
+      sub = `${escape(name)} · ${fmtBytes(size)}`;
+    } else {
       const model = (r.detail.model as string) ?? '—';
       const lang = (r.detail.language as string) ?? 'auto';
       const chars = Number(r.detail.chars ?? 0);
-      return row(
-        'fuchsia',
-        '<path d="M4 6h16M4 12h16M4 18h10"/>',
-        'Transcripción',
-        `${escape(model)} · ${escape(lang)} · ${fmt(chars)} caracteres`,
-        rel,
-        abs,
-      );
+      color = 'fuchsia';
+      icon = '<path d="M4 6h16M4 12h16M4 18h10"/>';
+      title = 'Transcripción';
+      sub = `${escape(model)} · ${escape(lang)} · ${fmt(chars)} caracteres`;
     }
-    return '';
-  }
 
-  function row(
-    color: string,
-    icon: string,
-    title: string,
-    sub: string,
-    rel: string,
-    abs: string,
-  ): string {
     const colors: Record<string, string> = {
-      brand: 'bg-brand-500/15 text-brand-300 border-brand-400/20',
-      sky: 'bg-sky-500/15 text-sky-300 border-sky-400/20',
-      fuchsia: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-400/20',
+      brand: 'bg-brand-500/15 text-brand-300 border-brand-400/30',
+      sky: 'bg-sky-500/15 text-sky-300 border-sky-400/30',
+      fuchsia: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-400/30',
     };
+
     return `
-      <div class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+      <div class="relative flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+        <span class="absolute -left-[22px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${colors[color].split(' ')[0]} ring-4 ring-[#07070b]"></span>
         <span class="w-9 h-9 rounded-lg ${colors[color]} grid place-items-center shrink-0 border">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon}</svg>
         </span>
@@ -353,7 +601,7 @@ import Footer from '../components/Footer.astro';
           <p class="text-white text-sm font-medium">${title}</p>
           <p class="text-slate-400 text-xs truncate">${sub}</p>
         </div>
-        <span class="text-slate-500 text-xs shrink-0" title="${abs}">${rel}</span>
+        <span class="text-slate-500 text-xs shrink-0 tabular-nums" title="${abs}">${rel}</span>
       </div>`;
   }
 
