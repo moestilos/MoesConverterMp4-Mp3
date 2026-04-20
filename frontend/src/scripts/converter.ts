@@ -229,14 +229,58 @@ export function initConverter(): void {
     ctx.file = file;
     if (fileName) fileName.textContent = file.name;
     if (fileSize) fileSize.textContent = formatBytes(file.size);
-    if (fileDuration) fileDuration.textContent = 'Analizando…';
     if (outputName) outputName.value = sanitizeName(file.name) || 'audio';
+
+    // Audio file → skip server roundtrip, go straight to "done" so the user
+    // can download it back (pass-through) or transcribe locally.
+    if (file.type.startsWith('audio/')) {
+      handleAudioFile(file);
+      return;
+    }
+
+    if (fileDuration) fileDuration.textContent = 'Analizando…';
     uploadStatus?.classList.remove('hidden');
     if (uploadLabel) uploadLabel.textContent = 'Subiendo archivo…';
     setUploadProgress(0, `0 / ${formatBytes(file.size)}`);
     setConvertEnabled(false);
     setStage('ready');
     uploadFile(file);
+  }
+
+  async function handleAudioFile(file: File) {
+    ctx.mp3Blob = file;
+    let durationSec = 0;
+    try {
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      const actx = new Ctx();
+      const buf = await actx.decodeAudioData(await file.arrayBuffer());
+      durationSec = buf.duration;
+      await actx.close();
+    } catch {
+      /* decode failed — seguimos sin duración */
+    }
+    ctx.meta = {
+      jobId: 'local',
+      name: file.name,
+      size: file.size,
+      durationSec,
+    };
+    if (fileDuration) fileDuration.textContent = formatDuration(durationSec);
+    if (doneSub) {
+      doneSub.textContent = `Audio listo (${formatBytes(file.size)}). Descarga o transcribe a texto.`;
+    }
+    const dlLabel = document.getElementById('btn-download-label');
+    if (dlLabel) {
+      const ext =
+        file.name.includes('.')
+          ? file.name.slice(file.name.lastIndexOf('.') + 1).toUpperCase()
+          : 'audio';
+      dlLabel.textContent = `Descargar ${ext}`;
+    }
+    setStage('done');
   }
 
   function uploadFile(file: File) {
@@ -374,7 +418,13 @@ export function initConverter(): void {
     if (!ctx.mp3Blob) return;
     const raw = outputName?.value.trim() || ctx.meta?.name || 'audio';
     const name = sanitizeName(raw) || 'audio';
-    downloadFromBlob(ctx.mp3Blob, `${name}.mp3`);
+    // Si el archivo original era audio, preservamos la extensión original.
+    const origExt =
+      ctx.file?.type.startsWith('audio/') && ctx.file.name.includes('.')
+        ? ctx.file.name.slice(ctx.file.name.lastIndexOf('.') + 1).toLowerCase()
+        : 'mp3';
+    const ext = /^[a-z0-9]{1,5}$/.test(origExt) ? origExt : 'mp3';
+    downloadFromBlob(ctx.mp3Blob, `${name}.${ext}`);
   }
 
   async function startTranscribe() {
