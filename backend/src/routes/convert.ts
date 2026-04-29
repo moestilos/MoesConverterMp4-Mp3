@@ -104,6 +104,31 @@ router.get('/convert/:id', (req: Request, res: Response) => {
   }
   if (job.status === 'converting') {
     send('progress', { progress: job.progress });
+    const poll = setInterval(() => {
+      const j = getJob(String(req.params.id));
+      if (!j) {
+        send('error', { error: 'Job no encontrado.' });
+        clearInterval(poll);
+        clearInterval(heartbeat);
+        res.end();
+        return;
+      }
+      if (j.status === 'ready') {
+        send('progress', { progress: 100 });
+        send('done', { jobId: j.id });
+        clearInterval(poll);
+        clearInterval(heartbeat);
+        res.end();
+      } else if (j.status === 'error') {
+        send('error', { error: j.error ?? 'Error desconocido.' });
+        clearInterval(poll);
+        clearInterval(heartbeat);
+        res.end();
+      } else {
+        send('progress', { progress: j.progress });
+      }
+    }, 500);
+    req.on('close', () => clearInterval(poll));
     return;
   }
 
@@ -167,9 +192,12 @@ router.get('/download/:id', (req: Request, res: Response) => {
     'Content-Disposition',
     `attachment; filename="${safeName}.mp3"`,
   );
+  try {
+    res.setHeader('Content-Length', fs.statSync(job.outputPath).size);
+  } catch { /* noop */ }
 
   const stream = fs.createReadStream(job.outputPath);
-  stream.on('error', () => res.status(500).end());
+  stream.on('error', () => res.end());
   stream.pipe(res);
 
   const userId = req.user?.sub;
