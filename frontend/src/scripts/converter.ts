@@ -1,4 +1,4 @@
-import type { TranscribeResult, WhisperSize } from './transcribe';
+import type { TranscribeResult } from './transcribe';
 import { getToken, trackTranscription } from './auth';
 import { toastError, toastSuccess } from './toast';
 
@@ -30,7 +30,6 @@ interface Context {
   xhr: XMLHttpRequest | null;
   transcribeAbort: AbortController | null;
   transcript: TranscribeResult | null;
-  transcriptModel: string;
   transcriptLang: string;
 }
 
@@ -83,7 +82,6 @@ export function initConverter(): void {
     xhr: null,
     transcribeAbort: null,
     transcript: null,
-    transcriptModel: 'base',
     transcriptLang: '',
   };
 
@@ -119,6 +117,7 @@ export function initConverter(): void {
   const btnAgain = $<HTMLButtonElement>('#btn-again');
   const btnAgain2 = $<HTMLButtonElement>('#btn-again-2');
   const btnRetry = $<HTMLButtonElement>('#btn-retry');
+  const whisperLang = $<HTMLSelectElement>('#whisper-lang');
   const btnTranscribe = $<HTMLButtonElement>('#btn-transcribe');
   const btnPlay = $<HTMLButtonElement>('#btn-play');
   const iconPlay = $<HTMLElement>('#icon-play');
@@ -134,8 +133,6 @@ export function initConverter(): void {
   const btnTransCancel = $<HTMLButtonElement>('#btn-trans-cancel');
   const btnBackDone = $<HTMLButtonElement>('#btn-back-done');
   const btnCopyText = $<HTMLButtonElement>('#btn-copy-text');
-  const whisperModel = $<HTMLSelectElement>('#whisper-model');
-  const whisperLang = $<HTMLSelectElement>('#whisper-lang');
   const progressLabel = $('#progress-label');
   const progressSub = $('#progress-sub');
   const progressPercent = $('#progress-percent');
@@ -501,46 +498,38 @@ export function initConverter(): void {
       showError('No hay audio disponible para transcribir.');
       return;
     }
-    const size = (whisperModel?.value as WhisperSize) ?? 'base';
     const lang = whisperLang?.value || undefined;
 
     setStage('transcribing');
-    setTransProgress(null, 'Preparando Whisper…', 'Detectando WebGPU/WASM…', 'Cargando');
+    setTransProgress(0, 'Subiendo audio…', 'Enviando al servidor', 'Subiendo');
 
     const abort = new AbortController();
     ctx.transcribeAbort = abort;
 
     try {
       const { transcribeBlob } = await import('./transcribe');
+      const filename =
+        ctx.meta?.name
+          ? sanitizeName(ctx.meta.name) + '.mp3'
+          : 'audio.mp3';
+
       const result = await transcribeBlob({
         blob: ctx.mp3Blob,
-        model: size,
+        filename,
         language: lang,
         signal: abort.signal,
         onProgress: (p) => {
-          if (p.phase === 'loading-model') {
-            const pct = typeof p.progress === 'number' ? p.progress : null;
-            setTransProgress(
-              pct,
-              'Descargando modelo…',
-              p.file
-                ? `${p.file}${
-                    pct !== null ? ` · ${Math.floor(pct)}%` : ''
-                  }`
-                : 'Primera vez — después irá instantáneo',
-              'Cacheando en IndexedDB',
-            );
-          } else if (p.phase === 'decoding') {
-            setTransProgress(null, 'Decodificando audio…', 'Preparando PCM 16 kHz mono', 'Procesando');
-          } else if (p.phase === 'running') {
-            setTransProgress(null, 'Transcribiendo…', 'Whisper procesando en tu dispositivo', 'En curso');
+          if (p.phase === 'uploading') {
+            const pct = p.uploadPct ?? 0;
+            setTransProgress(pct, 'Subiendo audio…', `${Math.floor(pct)}% enviado`, 'Subiendo');
+          } else if (p.phase === 'transcribing') {
+            setTransProgress(null, 'Transcribiendo…', 'Whisper Large v3 Turbo vía Groq', 'En curso');
           }
         },
       });
 
       const finalText = result.text.trim();
       ctx.transcript = { text: finalText, chunks: result.chunks };
-      ctx.transcriptModel = `whisper-${size}`;
       ctx.transcriptLang = lang ?? 'auto';
       if (transcriptText) transcriptText.value = finalText;
       if (transMeta) {
@@ -550,10 +539,10 @@ export function initConverter(): void {
         const chunkInfo = result.chunks?.length
           ? ` · ${result.chunks.length} segmentos`
           : '';
-        transMeta.textContent = `${ctx.transcriptModel} · ${ctx.transcriptLang} · ${dur}${chunkInfo}`;
+        transMeta.textContent = `whisper-large-v3-turbo · ${ctx.transcriptLang} · ${dur}${chunkInfo}`;
       }
       ctx.transcribeAbort = null;
-      trackTranscription(`whisper-${size}`, lang, finalText.length);
+      trackTranscription('whisper-large-v3-turbo', lang, finalText.length);
       setStage('transcript');
       toastSuccess(
         'Transcripción completada',
@@ -646,7 +635,7 @@ export function initConverter(): void {
   function buildJSON(): string {
     return JSON.stringify(
       {
-        model: ctx.transcriptModel,
+        model: 'whisper-large-v3-turbo',
         language: ctx.transcriptLang,
         source: ctx.meta?.name,
         durationSec: ctx.meta?.durationSec,

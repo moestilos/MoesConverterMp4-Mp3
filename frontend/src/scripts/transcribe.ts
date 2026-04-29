@@ -1,24 +1,16 @@
-// Browser-side transcription with @huggingface/transformers.
-// Runs Whisper locally in the user's browser. No server cost, no data leaves
-// the device. First run downloads the model (~75 MB for "base", ~250 MB for
-// "small"), cached in IndexedDB for subsequent runs.
-
-export type WhisperSize = 'tiny' | 'base' | 'small';
+import { apiFetch } from './auth';
 
 export interface TranscribeProgress {
-  phase: 'loading-model' | 'decoding' | 'running';
-  file?: string;
-  progress?: number;
-  total?: number;
-  loaded?: number;
+  phase: 'uploading' | 'transcribing';
+  uploadPct?: number;
 }
 
 export interface TranscribeOptions {
   blob: Blob;
-  model?: WhisperSize;
+  filename?: string;
   language?: string;
-  onProgress?: (p: TranscribeProgress) => void;
   signal?: AbortSignal;
+  onProgress?: (p: TranscribeProgress) => void;
 }
 
 export interface TranscribeResult {
@@ -26,110 +18,58 @@ export interface TranscribeResult {
   chunks?: Array<{ timestamp: [number, number | null]; text: string }>;
 }
 
-const MODEL_IDS: Record<WhisperSize, string> = {
-  tiny: 'Xenova/whisper-tiny',
-  base: 'Xenova/whisper-base',
-  small: 'Xenova/whisper-small',
-};
+export async function transcribeBlob(opts: TranscribeOptions): Promise<TranscribeResult> {
+  const { blob, filename = 'audio.mp3', language, signal, onProgress } = opts;
 
-let pipelineCache: { key: string; instance: unknown } | null = null;
+  const form = new FormData();
+  form.append('file', blob, filename);
+  if (language) form.append('language', language);
 
-async function decodeAudio(
-  blob: Blob,
-  onProgress?: (p: TranscribeProgress) => void,
-): Promise<Float32Array> {
-  onProgress?.({ phase: 'decoding' });
-  const arrayBuffer = await blob.arrayBuffer();
-  const Ctx =
-    window.AudioContext ||
-    (window as unknown as { webkitAudioContext: typeof AudioContext })
-      .webkitAudioContext;
-  // Whisper expects 16 kHz mono
-  const ctx = new Ctx({ sampleRate: 16000 });
-  const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
-  let mono: Float32Array;
-  if (audioBuffer.numberOfChannels === 1) {
-    mono = audioBuffer.getChannelData(0);
-  } else {
-    const l = audioBuffer.getChannelData(0);
-    const r = audioBuffer.getChannelData(1);
-    mono = new Float32Array(l.length);
-    for (let i = 0; i < l.length; i++) mono[i] = (l[i] + r[i]) / 2;
-  }
-  await ctx.close();
-  return mono;
-}
+  onProgress?.({ phase: 'uploading', uploadPct: 0 });
 
-export async function transcribeBlob(
-  opts: TranscribeOptions,
-): Promise<TranscribeResult> {
-  const model: WhisperSize = opts.model ?? 'base';
-  const modelId = MODEL_IDS[model];
+  // Upload with XHR to track upload progress, then wait for server response
+  const result = await new Promise<TranscribeResult>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
 
-  const { pipeline, env } = await import('@huggingface/transformers');
-  // Use quantized + WebGPU when available, fallback WASM.
-  env.allowRemoteModels = true;
-
-  let transcriber: any;
-  if (pipelineCache && pipelineCache.key === modelId) {
-    transcriber = pipelineCache.instance;
-  } else {
-    let device: 'webgpu' | 'wasm' = 'wasm';
-    try {
-      if ('gpu' in navigator) {
-        // @ts-expect-error experimental
-        const adapter = await navigator.gpu.requestAdapter();
-        if (adapter) device = 'webgpu';
-      }
-    } catch {
-      device = 'wasm';
-    }
-
-    transcriber = await pipeline('automatic-speech-recognition', modelId, {
-      device,
-      dtype: device === 'webgpu' ? 'fp32' : 'q8',
-      progress_callback: (p: {
-        status: string;
-        name?: string;
-        file?: string;
-        progress?: number;
-        loaded?: number;
-        total?: number;
-      }) => {
-        if (
-          p.status === 'progress' ||
-          p.status === 'download' ||
-          p.status === 'initiate'
-        ) {
-          opts.onProgress?.({
-            phase: 'loading-model',
-            file: p.file,
-            progress: p.progress,
-            loaded: p.loaded,
-            total: p.total,
-          });
-        }
-      },
+    signal?.addEventListener('abort', () => {
+      xhr.abort();
+      reject(new DOMException('Aborted', 'AbortError'));
     });
-    pipelineCache = { key: modelId, instance: transcriber };
-  }
 
-  if (opts.signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+    xhr.upload.onprogress = (ev) => {
+      if (!ev.lengthComputable) return;
+      const pct = (ev.loaded / ev.total) * 100;
+      onProgress?.({ phase: 'uploading', uploadPct: pct });
+    };
 
-  const audio = await decodeAudio(opts.blob, opts.onProgress);
-  if (opts.signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+    xhr.upload.onload = () => {
+      onProgress?.({ phase: 'transcribing' });
+    };
 
-  opts.onProgress?.({ phase: 'running' });
-  const output = await transcriber(audio, {
-    chunk_length_s: 30,
-    stride_length_s: 5,
-    language: opts.language ?? null,
-    task: 'transcribe',
-    return_timestamps: true,
+    xhr.onload = () => {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(data as TranscribeResult);
+        } else {
+          reject(new Error(data?.error ?? `Error del servidor (${xhr.status}).`));
+        }
+      } catch {
+        reject(new Error('Respuesta del servidor inválida.'));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('No se pudo conectar con el servidor.'));
+    xhr.ontimeout = () => reject(new Error('El servidor tardó demasiado en transcribir.'));
+
+    const token = localStorage.getItem('moesconverter.token');
+    const apiUrl = (import.meta.env.PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
+
+    xhr.open('POST', `${apiUrl}/api/transcribe`);
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.timeout = 5 * 60 * 1000; // 5 min max
+    xhr.send(form);
   });
 
-  return {
-    text: Array.isArray(output) ? output[0].text : output.text,
-    chunks: (output as { chunks?: TranscribeResult['chunks'] }).chunks,
-  };
+  return result;
 }

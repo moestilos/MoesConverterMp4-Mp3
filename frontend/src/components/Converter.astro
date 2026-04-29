@@ -77,7 +77,7 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
         </span>
         <div>
           <p class="text-white font-medium">Audio → Texto</p>
-          <p class="text-slate-400 text-xs">Whisper en tu navegador</p>
+          <p class="text-slate-400 text-xs">Whisper Large v3 · Groq</p>
         </div>
       </div>
       <div class="glass rounded-xl p-4 flex items-center gap-3">
@@ -229,42 +229,35 @@ const maxLabel = maxMb >= 1024 ? `${maxMb / 1024} GB` : `${maxMb} MB`;
         <div class="min-w-0 flex-1">
           <h4 class="text-white font-semibold">Transcribir a texto</h4>
           <p class="text-slate-400 text-xs sm:text-sm">
-            Whisper se ejecuta <strong class="text-slate-200">en tu dispositivo</strong>.
-            El audio no sale de aquí. Primera vez descarga el modelo (una sola vez).
+            Whisper Large v3 Turbo vía <strong class="text-slate-200">Groq</strong>.
+            Resultado en ~20 segundos. Soporta +50 idiomas.
           </p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <div>
-          <label for="whisper-model" class="block text-xs text-slate-400 mb-1">Modelo</label>
-          <select
-            id="whisper-model"
-            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-accent-400/60"
-          >
-            <option value="tiny">Tiny (~40 MB, rápido, calidad básica)</option>
-            <option value="base" selected>Base (~75 MB, recomendado)</option>
-            <option value="small">Small (~250 MB, mejor calidad, lento)</option>
-          </select>
-        </div>
-        <div>
-          <label for="whisper-lang" class="block text-xs text-slate-400 mb-1">Idioma</label>
-          <select
-            id="whisper-lang"
-            class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-accent-400/60"
-          >
-            <option value="">Auto-detectar</option>
-            <option value="spanish" selected>Español</option>
-            <option value="english">Inglés</option>
-            <option value="french">Francés</option>
-            <option value="german">Alemán</option>
-            <option value="italian">Italiano</option>
-            <option value="portuguese">Portugués</option>
-            <option value="catalan">Catalán</option>
-            <option value="japanese">Japonés</option>
-            <option value="chinese">Chino</option>
-          </select>
-        </div>
+      <div class="mb-4">
+        <label for="whisper-lang" class="block text-xs text-slate-400 mb-1">Idioma del audio</label>
+        <select
+          id="whisper-lang"
+          class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm outline-none focus:border-accent-400/60"
+        >
+          <option value="">Auto-detectar</option>
+          <option value="es" selected>Español</option>
+          <option value="en">Inglés</option>
+          <option value="fr">Francés</option>
+          <option value="de">Alemán</option>
+          <option value="it">Italiano</option>
+          <option value="pt">Portugués</option>
+          <option value="ca">Catalán</option>
+          <option value="ja">Japonés</option>
+          <option value="zh">Chino</option>
+          <option value="ar">Árabe</option>
+          <option value="ru">Ruso</option>
+          <option value="nl">Holandés</option>
+          <option value="pl">Polaco</option>
+          <option value="tr">Turco</option>
+          <option value="ko">Coreano</option>
+        </select>
       </div>
 
       <button id="btn-transcribe" type="button" class="btn-primary w-full">

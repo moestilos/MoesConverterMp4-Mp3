@@ -23,4 +23,5 @@ export const config = {
   adminEmail: process.env.ADMIN_EMAIL ?? 'gmateosoficial@gmail.com',
   adminUsername: process.env.ADMIN_USERNAME ?? 'momo',
   adminPassword: process.env.ADMIN_PASSWORD ?? '',
+  groqApiKey: process.env.GROQ_API_KEY ?? '',
 } as const;

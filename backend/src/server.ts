@@ -10,6 +10,7 @@ import { authRouter } from './routes/auth.js';
 import { adminRouter } from './routes/admin.js';
 import { trackRouter } from './routes/track.js';
 import { meRouter } from './routes/me.js';
+import { transcribeRouter } from './routes/transcribe.js';
 import { startCleanupLoop } from './utils/cleanup.js';
 import { seedAdmin } from './services/auth.js';
 
@@ -34,6 +35,7 @@ app.use('/admin', adminRouter);
 app.use('/track', trackRouter);
 app.use('/me', meRouter);
 app.use('/api', convertRouter);
+app.use('/api/transcribe', transcribeRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: `Not found: ${req.method} ${req.path}` });
